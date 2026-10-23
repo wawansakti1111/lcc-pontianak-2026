@@ -56,7 +56,13 @@ export const StageDisplay: React.FC = () => {
   const smaTeams = teams.filter((t) => t.category === 'siswa_sma');
 
   const getRankMap = (list: Team[]) => {
-    const sorted = [...list].sort((a, b) => b.score - a.score);
+    // Sort by score descending; if score tied, fallback to Regu desk order (A -> E)
+    const sorted = [...list].sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      return a.regu.localeCompare(b.regu);
+    });
     const map = new Map<string, number>();
     sorted.forEach((t, idx) => map.set(t.id, idx + 1));
     return map;
