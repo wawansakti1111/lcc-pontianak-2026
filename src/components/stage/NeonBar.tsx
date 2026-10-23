@@ -119,7 +119,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
           1. ELEVATING STACK (AVATAR + 3D NEON BLOCK)
       ======================================================== */}
       <div className="w-full relative flex flex-col items-center">
-        {/* Floating Avatar Photo & Circular Score Badge */}
+        {/* Floating Avatar Photo & Grand Stadium Scoreboard */}
         <motion.div
           animate={{
             y: -dynamicRaise
@@ -129,7 +129,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
             stiffness: 120,
             damping: 18
           }}
-          className="relative z-30 flex flex-col items-center -mb-5 pointer-events-none"
+          className="relative z-30 flex flex-col items-center -mb-6 pointer-events-none"
         >
           {/* Floating Delta Badge (+100 / -50) */}
           <AnimatePresence>
@@ -137,13 +137,13 @@ export const NeonBar: React.FC<NeonBarProps> = ({
               <motion.div
                 key={delta.timestamp}
                 initial={{ opacity: 0, y: 15, scale: 0.6 }}
-                animate={{ opacity: 1, y: -12, scale: 1.15 }}
-                exit={{ opacity: 0, y: -35, scale: 0.8 }}
+                animate={{ opacity: 1, y: -16, scale: 1.25 }}
+                exit={{ opacity: 0, y: -45, scale: 0.8 }}
                 transition={{ duration: 0.4 }}
-                className={`absolute -right-6 -top-3 z-40 font-black text-xs md:text-sm px-2.5 py-0.5 rounded-full shadow-2xl border-2 ${
+                className={`absolute -right-4 -top-3 z-50 font-black text-sm md:text-base px-3 py-1 rounded-full shadow-2xl border-2 ${
                   delta.value > 0
-                    ? 'bg-emerald-500 text-white border-emerald-200 shadow-emerald-500/60'
-                    : 'bg-rose-600 text-white border-rose-200 shadow-rose-600/60'
+                    ? 'bg-emerald-500 text-white border-emerald-200 shadow-emerald-500/80 ring-2 ring-emerald-300/40'
+                    : 'bg-rose-600 text-white border-rose-200 shadow-rose-600/80 ring-2 ring-rose-300/40'
                 }`}
               >
                 {delta.value > 0 ? `+${delta.value}` : delta.value}
@@ -157,38 +157,45 @@ export const NeonBar: React.FC<NeonBarProps> = ({
               initial={{ scale: 0, y: 8 }}
               animate={{ scale: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 200, damping: 10 }}
-              className="absolute -top-7 z-40 flex flex-col items-center filter drop-shadow-[0_0_12px_rgba(255,208,0,0.9)] animate-bounce"
+              className="absolute -top-10 z-50 flex flex-col items-center filter drop-shadow-[0_0_16px_rgba(255,208,0,0.95)] animate-bounce"
             >
-              <span className="text-xl md:text-2xl select-none">👑</span>
+              <span className="text-2xl md:text-3xl select-none">👑</span>
             </motion.div>
           )}
 
-          {/* Photo Frame with Double Glowing Halo */}
-          <div className="relative">
-            <div
-              className={`w-18 h-18 sm:w-20 sm:h-20 md:w-22 md:h-22 rounded-full overflow-hidden p-0.5 relative transition-all duration-300 ring-4 ${theme.ring} shadow-[0_0_22px_${theme.glow}]`}
-              style={{
-                background: theme.gradient
+          {/* 1. Large High-Resolution Team Photo Frame (Wide Squircle to showcase all 3 members clearly) */}
+          <div
+            className={`w-32 h-24 sm:w-36 sm:h-28 md:w-40 md:h-32 lg:w-44 lg:h-34 xl:w-48 xl:h-36 rounded-[22px] sm:rounded-[26px] overflow-hidden p-1 relative transition-all duration-300 ring-4 ${theme.ring} shadow-[0_0_30px_${theme.glow}] bg-slate-950`}
+            style={{
+              background: theme.gradient
+            }}
+          >
+            <img
+              src={team.photo_url || '/placeholder-team.png'}
+              alt={team.team_name}
+              className="w-full h-full object-cover object-center rounded-[18px] sm:rounded-[22px] bg-slate-900 border-2 border-white/90"
+              loading="eager"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/placeholder-team.png';
               }}
-            >
-              <img
-                src={team.photo_url || '/placeholder-team.png'}
-                alt={team.team_name}
-                className="w-full h-full object-cover rounded-full bg-slate-900 border-2 border-white/90"
-                loading="eager"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = '/placeholder-team.png';
-                }}
-              />
-            </div>
+            />
+          </div>
 
-            {/* Circular Black Score Badge (Centrally Overlapping Bottom Edge) */}
-            <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-8 sm:w-9 sm:h-9 md:w-9.5 md:h-9.5 rounded-full bg-slate-950 text-white flex items-center justify-center border-2 border-white shadow-xl z-30">
-              <span className="text-sm sm:text-base md:text-lg font-black tracking-tight tabular-nums">
-                {displayedScore}
-              </span>
-            </div>
+          {/* 2. GRAND STADIUM DIGITAL LED SCORE DISPLAY (Visible from 30+ meters) */}
+          <div
+            className="relative -mt-4 px-3 sm:px-4 py-1 sm:py-1.5 rounded-2xl bg-slate-950/95 border-2 shadow-[0_8px_30px_rgba(0,0,0,0.95)] flex flex-col items-center justify-center min-w-[130px] sm:min-w-[150px] md:min-w-[170px] z-30 pointer-events-auto"
+            style={{
+              borderColor: isLeader && team.score > 0 ? '#F59E0B' : theme.primary,
+              boxShadow: `0 0 25px ${isLeader && team.score > 0 ? 'rgba(245,158,11,0.7)' : theme.glow}, inset 0 0 12px rgba(0,0,0,0.9)`
+            }}
+          >
+            <span className="text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-widest text-slate-300 leading-none">
+              TOTAL SKOR
+            </span>
+            <span className="text-3xl sm:text-4xl md:text-[46px] lg:text-[54px] font-black font-mono tracking-tight tabular-nums text-white drop-shadow-[0_2px_14px_rgba(0,0,0,1)] leading-none my-0.5">
+              {displayedScore}
+            </span>
           </div>
         </motion.div>
 
@@ -264,6 +271,16 @@ export const NeonBar: React.FC<NeonBarProps> = ({
           <div className="mt-1 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/20 min-h-[2.1rem] flex items-center justify-center shadow-inner">
             <span className="text-xs sm:text-[13px] md:text-sm lg:text-[14px] font-extrabold text-amber-300 text-center leading-tight tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
               {team.institution}
+            </span>
+          </div>
+
+          {/* Secondary Live Score Strip in Base Card */}
+          <div className="mt-2 pt-1.5 border-t border-white/10 flex items-center justify-between px-2.5 bg-white/[0.04] rounded-lg">
+            <span className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+              SKOR MEJA
+            </span>
+            <span className="text-sm sm:text-base md:text-lg font-black font-mono text-cyan-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]">
+              {displayedScore} <span className="text-[10px] text-slate-400 font-medium">PTS</span>
             </span>
           </div>
         </div>

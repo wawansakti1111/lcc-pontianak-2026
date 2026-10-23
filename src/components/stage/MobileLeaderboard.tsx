@@ -132,16 +132,19 @@ const MobileCardItem: React.FC<{
       </AnimatePresence>
 
       <div className="flex items-center space-x-2 sm:space-x-3 w-full min-w-0">
-        {/* 1. Rank & Avatar Stack */}
-        <div className="relative shrink-0 flex items-center justify-center w-11 h-11 sm:w-13 sm:h-13">
+        {/* 1. Rank & Avatar Stack (Wide squircle frame showing all 3 team members) */}
+        <div className="relative shrink-0 flex items-center justify-center">
           <div
-            className="w-11 h-11 sm:w-13 sm:h-13 rounded-full overflow-hidden border-2 bg-slate-900 shadow-lg p-0.5"
-            style={{ borderColor: config.color }}
+            className="w-20 h-16 sm:w-24 sm:h-18 rounded-xl sm:rounded-2xl overflow-hidden border-2 bg-slate-900 shadow-xl p-0.5 relative"
+            style={{
+              borderColor: isLeadingScore ? '#F59E0B' : config.color,
+              boxShadow: `0 0 14px ${config.glow}`
+            }}
           >
             <img
               src={team.photo_url || '/placeholder-team.png'}
               alt={team.team_name}
-              className="w-full h-full object-cover rounded-full"
+              className="w-full h-full object-cover object-center rounded-lg sm:rounded-xl bg-slate-950"
               onError={(e) => {
                 e.currentTarget.src = '/placeholder-team.png';
               }}
@@ -150,14 +153,14 @@ const MobileCardItem: React.FC<{
 
           {/* Floating Crown for #1 */}
           {isLeadingScore && (
-            <div className="absolute -top-2.5 -right-1 z-20">
-              <Crown className="w-4 h-4 text-amber-400 fill-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.9)] animate-bounce" />
+            <div className="absolute -top-2.5 -right-1.5 z-20">
+              <Crown className="w-5 h-5 text-amber-400 fill-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.95)] animate-bounce" />
             </div>
           )}
 
           {/* Rank Badge overlapping bottom */}
           <div
-            className={`absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.2 rounded-full text-[9px] font-black border shadow-md flex items-center justify-center ${
+            className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-black border shadow-md flex items-center justify-center ${
               rank === 1
                 ? 'bg-amber-400 text-slate-950 border-amber-200'
                 : rank === 2
@@ -175,7 +178,7 @@ const MobileCardItem: React.FC<{
         <div className="flex-1 min-w-0 pr-1">
           <div className="flex items-center space-x-1.5 mb-0.5">
             <span
-              className="px-2 py-0.2 rounded text-[9px] font-black text-white uppercase tracking-wider shadow-sm"
+              className="px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-black text-white uppercase tracking-wider shadow-sm"
               style={{ background: config.gradient }}
             >
               {team.regu}
@@ -183,13 +186,13 @@ const MobileCardItem: React.FC<{
           </div>
 
           <h4
-            className="text-xs sm:text-base font-black text-white uppercase tracking-wide truncate drop-shadow-md leading-tight"
+            className="text-xs sm:text-sm font-black text-white uppercase tracking-wide truncate drop-shadow-md leading-tight"
             title={team.team_name}
           >
             {team.team_name}
           </h4>
 
-          <div className="mt-0.5 inline-block px-1.5 py-0.2 rounded bg-slate-900/90 border border-slate-700/80 shadow-sm max-w-full">
+          <div className="mt-0.5 inline-block px-1.5 py-0.5 rounded bg-slate-900/90 border border-slate-700/80 shadow-sm max-w-full">
             <p className="text-[10px] sm:text-[11px] font-extrabold text-amber-300 truncate tracking-wide leading-tight">
               {team.institution}
             </p>
@@ -212,14 +215,25 @@ const MobileCardItem: React.FC<{
           </div>
         </div>
 
-        {/* 3. Big Score Readout */}
-        <div className="shrink-0 text-right pl-1 min-w-[50px]">
-          <span className="text-xl sm:text-3xl font-black font-mono tabular-nums text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-            {displayedScore}
-          </span>
-          <span className="block text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">
-            POIN
-          </span>
+        {/* 3. Grand Digital LED Score Readout */}
+        <div className="shrink-0 flex flex-col items-end justify-center pl-1 min-w-[70px] sm:min-w-[85px]">
+          <div
+            className="px-2 sm:px-2.5 py-1 rounded-xl bg-slate-950/95 border-2 shadow-lg flex flex-col items-center justify-center"
+            style={{
+              borderColor: isLeadingScore ? '#F59E0B' : config.color,
+              boxShadow: `0 0 14px ${isLeadingScore ? 'rgba(245,158,11,0.5)' : config.glow}`
+            }}
+          >
+            <span className="text-[8px] font-mono font-black text-slate-400 uppercase tracking-wider leading-none">
+              SKOR
+            </span>
+            <span className="text-2xl sm:text-3xl font-black font-mono tabular-nums text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.6)] leading-tight my-0.5">
+              {displayedScore}
+            </span>
+            <span className="text-[7.5px] font-mono font-bold text-slate-400 uppercase tracking-widest leading-none">
+              POIN
+            </span>
+          </div>
         </div>
       </div>
     </motion.div>
