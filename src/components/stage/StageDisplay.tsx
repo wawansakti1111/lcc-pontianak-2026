@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useScoreboardData } from '../../hooks/useScoreboardData';
 import { StageHeader } from './StageHeader';
 import { NeonBar } from './NeonBar';
-import { GridFloor3D } from './GridFloor3D';
 import { StageRoundRecap } from './StageRoundRecap';
 import { StageHistoryLog } from './StageHistoryLog';
 import type { Team } from '../../types';
@@ -22,7 +21,7 @@ export const StageDisplay: React.FC = () => {
     }
   };
 
-  // Determine stage presentation mode: URL param override (convenient for multi-screen/testing) or admin stageConfig
+  // Determine stage presentation mode: URL param override or admin stageConfig
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const urlMode = (searchParams?.get('mode') as 'scoreboard' | 'recap' | 'history') || null;
 
@@ -70,26 +69,26 @@ export const StageDisplay: React.FC = () => {
   return (
     <div
       onDoubleClick={handleDoubleClick}
-      className="relative w-screen h-screen overflow-hidden main-stage-bg flex flex-col justify-between select-none cursor-default"
+      className="relative w-screen h-screen overflow-hidden flex flex-col justify-between select-none cursor-default bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: "url('/stage-backdrop.jpg')"
+      }}
       title="Layar Panggung LCC Pemuda Pontianak 2026 (Double click untuk Fullscreen)"
     >
-      {/* Dynamic Ambient Background Glows */}
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-purple-600/35 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/3 -right-20 w-96 h-96 bg-cyan-400/30 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-[650px] h-64 bg-indigo-500/25 rounded-full blur-3xl pointer-events-none" />
+      {/* Soft Ambient Atmospheric Fill */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/25 pointer-events-none" />
 
       {/* ========================================================
-          ZONA ATAS: HEADER & IDENTITAS PENYELENGGARA (~16%)
-          (100% PURE SPECTATOR BROADCAST - NO ADMIN BUTTONS)
+          ZONA ATAS: HEADER & IDENTITAS PENYELENGGARA (~18%)
       ======================================================== */}
       <StageHeader stageConfig={stageConfig} />
 
       {/* ========================================================
-          ZONA TENGAH: MAIN BAR-RACE, ROUND RECAP, OR HISTORY LOG (~68%)
+          ZONA TENGAH: MAIN 5 PODIUMS / RECAP TABLE / HISTORY LOG (~72%)
       ======================================================== */}
-      <main className="relative flex-1 w-full max-w-[1720px] mx-auto px-4 md:px-8 z-10 flex items-center justify-center pb-2">
+      <main className="relative flex-1 w-full max-w-[1360px] mx-auto px-4 sm:px-6 md:px-8 z-10 flex items-end justify-center pb-8 sm:pb-10 md:pb-12">
         {presentationMode === 'history' ? (
-          /* TV Broadcast Score History & Audit Log Mode (Controlled Remotely by Admin) */
+          /* TV Broadcast Score History & Audit Log Mode */
           <StageHistoryLog
             teams={teams}
             history={history}
@@ -97,7 +96,7 @@ export const StageDisplay: React.FC = () => {
             currentRoundTitle={stageConfig.current_round_title || 'GRAND FINAL'}
           />
         ) : presentationMode === 'recap' ? (
-          /* TV Broadcast Score Recap Table Mode (Controlled Remotely by Admin) */
+          /* TV Broadcast Score Recap Table Mode */
           <StageRoundRecap
             teams={teams}
             history={history}
@@ -108,8 +107,8 @@ export const StageDisplay: React.FC = () => {
           /* Dual Arena Split Mode (Mahasiswa & SMA side by side) */
           <div className="w-full h-full flex items-end gap-6 md:gap-10">
             {/* Arena Mahasiswa */}
-            <div className="flex-1 h-full flex flex-col justify-end bg-slate-950/20 rounded-2xl p-2 border border-white/10 backdrop-blur-xs relative">
-              <div className="absolute top-1 left-3 text-xs font-black uppercase tracking-wider text-indigo-300 flex items-center space-x-1">
+            <div className="flex-1 h-full flex flex-col justify-end bg-slate-950/40 rounded-2xl p-2 border border-white/20 backdrop-blur-sm relative">
+              <div className="absolute top-2 left-4 text-xs font-black uppercase tracking-wider text-cyan-300 flex items-center space-x-1">
                 <span>🎓 KATEGORI MAHASISWA</span>
               </div>
               <div className="w-full h-[90%] flex items-end justify-around">
@@ -127,8 +126,8 @@ export const StageDisplay: React.FC = () => {
             </div>
 
             {/* Arena Siswa SMA */}
-            <div className="flex-1 h-full flex flex-col justify-end bg-slate-950/20 rounded-2xl p-2 border border-white/10 backdrop-blur-xs relative">
-              <div className="absolute top-1 left-3 text-xs font-black uppercase tracking-wider text-amber-300 flex items-center space-x-1">
+            <div className="flex-1 h-full flex flex-col justify-end bg-slate-950/40 rounded-2xl p-2 border border-white/20 backdrop-blur-sm relative">
+              <div className="absolute top-2 left-4 text-xs font-black uppercase tracking-wider text-amber-300 flex items-center space-x-1">
                 <span>🏫 KATEGORI SISWA SMA</span>
               </div>
               <div className="w-full h-[90%] flex items-end justify-around">
@@ -146,8 +145,8 @@ export const StageDisplay: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Single Category 5 Columns View (Standard Stage View) */
-          <div className="w-full h-full flex items-end justify-center gap-3 md:gap-6 lg:gap-8 max-w-6xl">
+          /* Single Category 5 Columns View (Matching Reference Mockup 1:1) */
+          <div className="w-full h-full flex items-end justify-center gap-2 sm:gap-4 md:gap-5 lg:gap-6 max-w-6xl pb-3 sm:pb-5 md:pb-7">
             {sortTeams(
               stageConfig.active_category_view === 'mahasiswa_umum' ? mhsTeams : smaTeams
             ).map((team) => {
@@ -173,10 +172,8 @@ export const StageDisplay: React.FC = () => {
         )}
       </main>
 
-      {/* ========================================================
-          ZONA BAWAH: 3D PERSPECTIVE GRID FLOOR & PODIUM (~16%)
-      ======================================================== */}
-      <GridFloor3D />
+      {/* Subtle floor lighting line at the bottom */}
+      <div className="w-full h-2 bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none" />
     </div>
   );
 };
