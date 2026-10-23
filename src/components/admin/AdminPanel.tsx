@@ -143,7 +143,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
       {/* ========================================================
           1. TOP NAVIGATION BAR (Matte Studio Console Header)
       ======================================================== */}
-      <header className="min-h-12 bg-[#111216] border-b border-zinc-800/90 px-2.5 sm:px-4 md:px-6 py-2 md:py-0 flex items-center justify-between gap-2 shrink-0 sticky top-0 z-40">
+      <header className="min-h-12 bg-[#111216] border-b border-zinc-800/90 px-2 sm:px-4 md:px-6 py-2 md:py-0 flex items-center justify-between gap-1.5 shrink-0 sticky top-0 z-40 max-w-[100vw] overflow-x-hidden">
         {/* Brand & Connection State */}
         <div className="flex items-center space-x-2 shrink-0">
           <div className="flex items-center space-x-1.5">
@@ -267,7 +267,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
       {/* ========================================================
           2. UNIFIED TOOLBAR: Category, Screen, Sort & Round Selector
       ======================================================== */}
-      <div className="bg-[#111216] border-b border-zinc-800/80 px-2 sm:px-4 md:px-6 py-2 shrink-0 flex flex-wrap lg:flex-nowrap items-center justify-between gap-2 sticky top-12 md:top-13 z-30">
+      <div className="bg-[#111216] border-b border-zinc-800/80 px-2 sm:px-4 md:px-6 py-2 shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sticky top-12 md:top-13 z-30 max-w-[100vw] overflow-x-hidden">
         {/* Left: Category Switcher */}
         <div className="flex items-center space-x-2 shrink-0">
           <div className="flex h-9 bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
@@ -310,7 +310,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
         </div>
 
         {/* Center: Stage Target View & Sort Modes */}
-        <div className="flex items-center space-x-2.5 text-xs shrink-0">
+        <div className="flex items-center space-x-2 text-xs overflow-x-auto no-scrollbar max-w-full py-0.5 shrink-0 sm:shrink">
           {/* Stage Target View */}
           <div className="flex h-9 items-center space-x-0.5 bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
             <span className="text-[10px] font-bold text-zinc-400 uppercase px-2 font-mono">LAYAR:</span>
@@ -432,11 +432,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
         </div>
 
         {/* Right: Solid & Luxurious Round Selector */}
-        <div className="relative shrink-0" ref={roundDropdownRef}>
+        <div className="relative w-full sm:w-auto shrink-0" ref={roundDropdownRef}>
           <button
             type="button"
             onClick={() => setIsRoundDropdownOpen(!isRoundDropdownOpen)}
-            className={`h-9 px-3.5 rounded-lg border flex items-center space-x-2.5 transition-all active:scale-[0.98] shadow-sm cursor-pointer select-none ${
+            className={`h-9 w-full sm:w-auto px-3.5 rounded-lg border flex items-center justify-between sm:justify-start space-x-2.5 transition-all active:scale-[0.98] shadow-sm cursor-pointer select-none ${
               isRoundDropdownOpen
                 ? 'bg-zinc-800 border-amber-400/80 text-white ring-2 ring-amber-400/20'
                 : 'bg-zinc-900/90 hover:bg-zinc-800 border-zinc-700/80 text-zinc-100 hover:border-zinc-600'
@@ -547,7 +547,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
       {/* ========================================================
           3. MAIN CONTENT: THE 5 PODIUM CARDS (Pixel-Aligned Grid)
       ======================================================== */}
-      <main className="flex-1 w-full max-w-[1540px] mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+      <main className="flex-1 w-full max-w-[1540px] mx-auto px-2 sm:px-4 md:px-6 py-3 sm:py-4 overflow-hidden">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4 w-full">
           {currentTeams.map((team) => (
             <TeamCard

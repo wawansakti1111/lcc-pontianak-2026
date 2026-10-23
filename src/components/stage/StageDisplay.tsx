@@ -172,7 +172,7 @@ export const StageDisplay: React.FC = () => {
       {/* ========================================================
           ZONA TENGAH: MAIN 5 PODIUMS / RECAP TABLE / HISTORY LOG (~72%)
       ======================================================== */}
-      <main className="relative flex-1 w-full max-w-[1560px] mx-auto px-2 sm:px-4 md:px-6 z-10 flex items-end justify-center pb-4 sm:pb-8 md:pb-12">
+      <main className="relative flex-1 w-full max-w-full overflow-hidden mx-auto px-2 sm:px-4 md:px-6 z-10 flex flex-col md:flex-row items-center md:items-end justify-start md:justify-center pb-4 sm:pb-8 md:pb-12">
         {presentationMode === 'history' ? (
           /* TV Broadcast Score History & Audit Log Mode */
           <StageHistoryLog
@@ -231,9 +231,9 @@ export const StageDisplay: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-end">
+          <div className="w-full flex-1 md:h-full flex flex-col items-center justify-start md:justify-end">
             {/* 1. MOBILE ONLY VIEW (< md) */}
-            <div className="md:hidden w-full">
+            <div className="md:hidden w-full max-w-full overflow-hidden">
               {mobileMode === 'cards' ? (
                 /* Mobile Leaderboard Cards */
                 <MobileLeaderboard

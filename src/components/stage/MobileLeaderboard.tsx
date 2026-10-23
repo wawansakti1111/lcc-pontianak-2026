@@ -102,7 +102,7 @@ const MobileCardItem: React.FC<{
     <motion.div
       layout
       transition={{ layout: { duration: 0.4, type: 'spring', stiffness: 100, damping: 15 } }}
-      className={`relative w-full rounded-2xl p-3 bg-slate-950/90 backdrop-blur-md border-2 transition-all shadow-xl ${
+      className={`relative w-full rounded-2xl p-2.5 sm:p-3 bg-slate-950/90 backdrop-blur-md border-2 transition-all shadow-xl ${
         isLeadingScore
           ? 'border-amber-400/80 ring-2 ring-amber-400/30'
           : config.borderClass
@@ -131,7 +131,7 @@ const MobileCardItem: React.FC<{
         )}
       </AnimatePresence>
 
-      <div className="flex items-center space-x-2.5 sm:space-x-3 w-full">
+      <div className="flex items-center space-x-2 sm:space-x-3 w-full min-w-0">
         {/* 1. Rank & Avatar Stack */}
         <div className="relative shrink-0 flex items-center justify-center w-11 h-11 sm:w-13 sm:h-13">
           <div
@@ -234,7 +234,7 @@ export const MobileLeaderboard: React.FC<MobileLeaderboardProps> = ({
   maxScore
 }) => {
   return (
-    <div className="w-full space-y-2.5 pb-6">
+    <div className="w-full max-w-full overflow-hidden space-y-2 pb-6 px-0.5">
       {teams.map((team) => (
         <MobileCardItem
           key={team.id}
