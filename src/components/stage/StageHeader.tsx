@@ -38,71 +38,72 @@ export const StageHeader: React.FC<StageHeaderProps> = ({ stageConfig }) => {
   const badge = getCategoryBadge();
 
   return (
-    <header className="relative w-full z-20 flex flex-col items-center justify-start pt-2 sm:pt-3 pb-1 select-none">
+    <header className="relative w-full max-w-[100vw] overflow-x-hidden z-20 flex flex-col items-center justify-start pt-2 sm:pt-3 pb-1 select-none px-2">
       {/* 1. White Frosted Sponsor / Organizer Pill */}
-      <div className="bg-white/95 backdrop-blur-md px-5 sm:px-6 py-1 sm:py-1.5 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-white/80 flex items-center space-x-3 sm:space-x-4">
+      <div className="bg-white/95 backdrop-blur-md px-2.5 sm:px-6 py-1 sm:py-1.5 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-white/80 flex items-center space-x-1.5 sm:space-x-4 max-w-[92vw] overflow-x-auto no-scrollbar shrink-0">
         {/* Logo 1: Pemkot Pontianak */}
-        <div className="flex items-center space-x-1.5">
-          <div className="w-5 h-5 rounded-full bg-emerald-600 flex items-center justify-center text-[9px] font-black text-white shadow-sm ring-1 ring-emerald-700">
+        <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-600 flex items-center justify-center text-[7px] sm:text-[9px] font-black text-white shadow-sm ring-1 ring-emerald-700">
             PTK
           </div>
-          <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-800 tracking-wider">
-            PEMKOT PONTIANAK
+          <span className="text-[8px] sm:text-[11px] font-extrabold text-slate-800 tracking-wider">
+            <span className="sm:hidden">PEMKOT</span>
+            <span className="hidden sm:inline">PEMKOT PONTIANAK</span>
           </span>
         </div>
 
-        <div className="w-0.5 h-3 bg-slate-300 rounded-full" />
+        <div className="w-0.5 h-2.5 sm:h-3 bg-slate-300 rounded-full shrink-0" />
 
         {/* Logo 2: Disporapar */}
-        <div className="flex items-center space-x-1.5">
-          <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-[9px] font-black text-white shadow-sm ring-1 ring-blue-700">
+        <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600 flex items-center justify-center text-[7px] sm:text-[9px] font-black text-white shadow-sm ring-1 ring-blue-700">
             DSP
           </div>
-          <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-800 tracking-wider">
+          <span className="text-[8px] sm:text-[11px] font-extrabold text-slate-800 tracking-wider">
             DISPORAPAR
           </span>
         </div>
 
-        <div className="w-0.5 h-3 bg-slate-300 rounded-full" />
+        <div className="w-0.5 h-2.5 sm:h-3 bg-slate-300 rounded-full shrink-0" />
 
         {/* Logo 3: HUT 255 Pontianak */}
-        <div className="flex items-center space-x-1.5">
-          <span className="text-[10px] sm:text-[11px] font-black text-amber-500">
-            HUT KE-255
+        <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+          <span className="text-[8px] sm:text-[11px] font-black text-amber-500 whitespace-nowrap">
+            HUT 255
           </span>
-          <span className="text-[9px] sm:text-[10px] font-semibold text-slate-600">
+          <span className="hidden sm:inline text-[9px] sm:text-[10px] font-semibold text-slate-600 whitespace-nowrap">
             Tangguh Bersahabat
           </span>
         </div>
 
-        <div className="w-0.5 h-3 bg-slate-300 rounded-full" />
+        <div className="w-0.5 h-2.5 sm:h-3 bg-slate-300 rounded-full shrink-0" />
 
         {/* Logo 4: Raja CreArt */}
-        <div className="flex items-center space-x-1.5">
-          <div className="w-5 h-5 rounded bg-purple-700 flex items-center justify-center text-[8px] font-black text-yellow-300 shadow-sm">
+        <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded bg-purple-700 flex items-center justify-center text-[7px] sm:text-[8px] font-black text-yellow-300 shadow-sm">
             RCA
           </div>
-          <span className="text-[10px] sm:text-[11px] font-extrabold text-purple-900 tracking-wider">
+          <span className="text-[8px] sm:text-[11px] font-extrabold text-purple-900 tracking-wider whitespace-nowrap">
             RAJA CREART
           </span>
         </div>
       </div>
 
       {/* 2. Main Title (Two lines, 3D Embossed White-Blue Typography) */}
-      <div className="flex flex-col items-center leading-none mt-2 sm:mt-2.5 text-center">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black tracking-wide uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-50 to-blue-200 drop-shadow-[0_4px_12px_rgba(30,64,175,0.7)] filter">
+      <div className="flex flex-col items-center leading-none mt-1 sm:mt-2.5 text-center px-1 max-w-[94vw]">
+        <h1 className="text-base sm:text-2xl md:text-3xl lg:text-[40px] font-black tracking-wide uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-50 to-blue-200 drop-shadow-[0_4px_12px_rgba(30,64,175,0.7)] filter">
           LOMBA CERDAS CERMAT
         </h1>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-black tracking-wide uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-50 to-blue-200 drop-shadow-[0_4px_12px_rgba(30,64,175,0.7)] filter mt-0.5 sm:mt-1">
+        <h2 className="text-base sm:text-2xl md:text-3xl lg:text-[40px] font-black tracking-wide uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-50 to-blue-200 drop-shadow-[0_4px_12px_rgba(30,64,175,0.7)] filter mt-0.5 sm:mt-1">
           PEMUDA KOTA PONTIANAK 2026
         </h2>
       </div>
 
       {/* 3. Golden Laurel Wreath Ribbon (Babak Aktif) */}
-      <div className="mt-2 sm:mt-2.5 flex items-center justify-center space-x-2.5">
+      <div className="mt-1 sm:mt-2.5 flex items-center justify-center space-x-1 sm:space-x-2.5 max-w-[94vw]">
         {/* Left Golden Laurel Leaves SVG */}
         <svg
-          className="w-8 h-8 sm:w-10 sm:h-10 text-amber-400 drop-shadow-[0_2px_10px_rgba(245,158,11,0.75)]"
+          className="w-4 h-4 sm:w-8 sm:h-10 text-amber-400 drop-shadow-[0_2px_10px_rgba(245,158,11,0.75)] shrink-0"
           viewBox="0 0 32 32"
           fill="currentColor"
         >
@@ -110,15 +111,15 @@ export const StageHeader: React.FC<StageHeaderProps> = ({ stageConfig }) => {
         </svg>
 
         {/* Gold Ribbon Capsule */}
-        <div className="px-6 sm:px-8 md:px-10 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-500 shadow-[0_4px_22px_rgba(245,158,11,0.6)] border border-amber-100 flex items-center justify-center">
-          <span className="text-xs sm:text-sm md:text-base lg:text-lg font-black tracking-widest uppercase text-slate-950">
+        <div className="px-3 sm:px-8 md:px-10 py-0.5 sm:py-1.5 rounded-full bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-500 shadow-[0_4px_22px_rgba(245,158,11,0.6)] border border-amber-100 flex items-center justify-center text-center max-w-[85vw]">
+          <span className="text-[9px] sm:text-xs md:text-base lg:text-lg font-black tracking-wider sm:tracking-widest uppercase text-slate-950 truncate">
             {stageConfig.current_round_title || 'GRAND FINAL - BABAK I: WAJIB TIM'}
           </span>
         </div>
 
         {/* Right Golden Laurel Leaves SVG (Mirrored) */}
         <svg
-          className="w-8 h-8 sm:w-10 sm:h-10 text-amber-400 drop-shadow-[0_2px_10px_rgba(245,158,11,0.75)] transform -scale-x-100"
+          className="w-4 h-4 sm:w-8 sm:h-10 text-amber-400 drop-shadow-[0_2px_10px_rgba(245,158,11,0.75)] transform -scale-x-100 shrink-0"
           viewBox="0 0 32 32"
           fill="currentColor"
         >
@@ -127,19 +128,19 @@ export const StageHeader: React.FC<StageHeaderProps> = ({ stageConfig }) => {
       </div>
 
       {/* 4. Sub-Pills: Category & Venue */}
-      <div className="mt-2 sm:mt-2.5 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+      <div className="mt-1 sm:mt-2 flex flex-wrap items-center justify-center gap-1 sm:gap-2 max-w-[94vw]">
         {/* Category Pill */}
         <div
-          className={`px-4 sm:px-5 py-1 rounded-full text-[11px] sm:text-xs font-black tracking-wider uppercase shadow-md flex items-center space-x-1.5 border bg-gradient-to-r text-white ${badge.badgeClass}`}
+          className={`px-2.5 sm:px-5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-xs font-black tracking-wider uppercase shadow-md flex items-center space-x-1 sm:space-x-1.5 border bg-gradient-to-r text-white ${badge.badgeClass}`}
         >
           <span>{badge.icon}</span>
-          <span>{badge.label}</span>
+          <span className="truncate max-w-[50vw] sm:max-w-none">{badge.label}</span>
         </div>
 
         {/* Venue Subtitle Pill */}
-        <div className="px-4 sm:px-5 py-1 rounded-full text-[11px] sm:text-xs font-semibold text-slate-200 tracking-wide bg-slate-900/85 border border-white/20 shadow-md backdrop-blur-md flex items-center space-x-1.5">
+        <div className="px-2.5 sm:px-5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-xs font-semibold text-slate-200 tracking-wide bg-slate-900/85 border border-white/20 shadow-md backdrop-blur-md flex items-center space-x-1 sm:space-x-1.5">
           <span>📍</span>
-          <span>{stageConfig.event_subtitle || 'Ballroom Hotel Mercure Pontianak Lt. 9'}</span>
+          <span className="truncate max-w-[40vw] sm:max-w-none">{stageConfig.event_subtitle || 'Ballroom Hotel Mercure Pontianak Lt. 9'}</span>
         </div>
       </div>
     </header>

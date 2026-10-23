@@ -141,16 +141,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
   return (
     <div className="min-h-screen bg-[#090a0d] text-zinc-100 flex flex-col justify-between font-sans select-none antialiased">
       {/* ========================================================
-          1. TOP NAVIGATION BAR (Matte Studio Console Header h-13)
+          1. TOP NAVIGATION BAR (Matte Studio Console Header)
       ======================================================== */}
-      <header className="h-13 bg-[#111216] border-b border-zinc-800/90 px-3 md:px-6 flex items-center justify-between shrink-0 sticky top-0 z-40 overflow-x-auto no-scrollbar">
+      <header className="min-h-12 bg-[#111216] border-b border-zinc-800/90 px-2.5 sm:px-4 md:px-6 py-2 md:py-0 flex items-center justify-between gap-2 shrink-0 sticky top-0 z-40">
         {/* Brand & Connection State */}
-        <div className="flex items-center space-x-2.5 shrink-0">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-extrabold tracking-tight text-white uppercase whitespace-nowrap">
-              LCC Pemuda Pontianak 2026
+        <div className="flex items-center space-x-2 shrink-0">
+          <div className="flex items-center space-x-1.5">
+            <span className="text-xs sm:text-sm font-extrabold tracking-tight text-white uppercase whitespace-nowrap">
+              <span className="sm:hidden">LCC PTK 2026</span>
+              <span className="hidden sm:inline">LCC Pemuda Pontianak 2026</span>
             </span>
-            <span className="hidden sm:inline text-[10px] font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/25 whitespace-nowrap">
+            <span className="hidden sm:inline text-[10px] font-mono font-bold text-amber-400 bg-amber-500/10 px-1.5 sm:px-2 py-0.5 rounded border border-amber-500/25 whitespace-nowrap">
               CONSOLE
             </span>
           </div>
@@ -170,22 +171,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
                   : 'bg-amber-500'
               }`}
             />
-            <span className="text-[11px] font-medium">
+            <span className="text-[10px] sm:text-[11px] font-medium">
               {connectionStatus === 'connected' ? (
                 <span className="text-emerald-400 flex items-center">
-                  <Wifi className="w-3 h-3 mr-1 inline" /> Realtime Cloud (Supabase Aktif)
+                  <Wifi className="w-3 h-3 mr-1 inline" /> <span className="hidden md:inline">Realtime Cloud (Supabase Aktif)</span><span className="md:hidden">Cloud</span>
                 </span>
               ) : connectionStatus === 'connecting' ? (
                 <span className="text-cyan-400 flex items-center">
-                  <Wifi className="w-3 h-3 mr-1 inline animate-pulse" /> Menghubungkan Cloud...
+                  <Wifi className="w-3 h-3 mr-1 inline animate-pulse" /> <span className="hidden md:inline">Menghubungkan Cloud...</span><span className="md:hidden">Koneksi...</span>
                 </span>
               ) : connectionStatus === 'error' ? (
                 <span className="text-rose-400 flex items-center">
-                  <Radio className="w-3 h-3 mr-1 inline" /> Kendala Cloud (Fallback Lokal)
+                  <Radio className="w-3 h-3 mr-1 inline" /> <span className="hidden md:inline">Kendala Cloud (Fallback)</span><span className="md:hidden">Offline</span>
                 </span>
               ) : (
                 <span className="text-amber-400 flex items-center">
-                  <Radio className="w-3 h-3 mr-1 inline" /> Standby Lokal
+                  <Radio className="w-3 h-3 mr-1 inline" /> Standby
                 </span>
               )}
             </span>
@@ -193,16 +194,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
         </div>
 
         {/* Global Toolbar Actions */}
-        <div className="flex items-center space-x-2 shrink-0">
+        <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
           {/* History & Round Recap Button */}
           <button
             onClick={() => setIsHistoryModalOpen(true)}
-            className="h-8.5 px-2.5 md:px-3 rounded-lg bg-zinc-850 hover:bg-zinc-800 text-zinc-200 hover:text-white font-bold text-xs border border-zinc-750 flex items-center space-x-1.5 transition-colors cursor-pointer"
+            className="h-8 sm:h-8.5 px-2 sm:px-3 rounded-lg bg-zinc-850 hover:bg-zinc-800 text-zinc-200 hover:text-white font-bold text-xs border border-zinc-750 flex items-center space-x-1 sm:space-x-1.5 transition-colors cursor-pointer"
             title="Buka Riwayat Input Skor & Rekap Per Babak"
           >
             <History className="w-3.5 h-3.5 text-cyan-400" />
             <span className="hidden md:inline">Riwayat & Rekap</span>
-            <span className="md:hidden">Rekap</span>
+            <span className="hidden sm:inline md:hidden">Rekap</span>
             <span className="ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-cyan-950/80 text-cyan-300 border border-cyan-500/30">
               {history.length}
             </span>
@@ -211,7 +212,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
           {/* Confetti Trigger */}
           <button
             onClick={triggerConfetti}
-            className="h-8.5 px-2.5 md:px-3 rounded-lg bg-zinc-850 hover:bg-zinc-800 text-zinc-200 hover:text-white font-medium text-xs border border-zinc-750 flex items-center space-x-1.5 transition-colors cursor-pointer"
+            className="h-8 sm:h-8.5 px-2 sm:px-3 rounded-lg bg-zinc-850 hover:bg-zinc-800 text-zinc-200 hover:text-white font-medium text-xs border border-zinc-750 flex items-center space-x-1 transition-colors cursor-pointer"
             title="Tembakkan Efek Konfeti ke Layar Panggung"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
@@ -222,7 +223,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
           <button
             onClick={undoLastAction}
             disabled={history.length === 0}
-            className="h-8.5 px-2 md:px-2.5 rounded-lg bg-zinc-850 hover:bg-zinc-800 disabled:opacity-30 text-zinc-200 font-medium text-xs border border-zinc-750 flex items-center space-x-1 transition-colors cursor-pointer"
+            className="h-8 sm:h-8.5 px-2 sm:px-2.5 rounded-lg bg-zinc-850 hover:bg-zinc-800 disabled:opacity-30 text-zinc-200 font-medium text-xs border border-zinc-750 flex items-center space-x-1 transition-colors cursor-pointer"
             title="Batalkan perubahan skor terakhir"
           >
             <Undo2 className="w-3.5 h-3.5 text-zinc-400" />
@@ -232,7 +233,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
           {/* Supabase Settings */}
           <button
             onClick={() => setIsSupabaseModalOpen(true)}
-            className="h-8.5 w-8.5 rounded-lg bg-zinc-850 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-750 flex items-center justify-center transition-colors cursor-pointer"
+            className="h-8 sm:h-8.5 w-8 sm:w-8.5 rounded-lg bg-zinc-850 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-750 flex items-center justify-center transition-colors cursor-pointer"
             title="Konfigurasi Supabase Cloud"
           >
             <Cloud className="w-3.5 h-3.5" />
@@ -242,9 +243,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
           {onOpenStage ? (
             <button
               onClick={onOpenStage}
-              className="h-8.5 px-3 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs flex items-center space-x-1.5 transition-colors shadow-sm cursor-pointer"
+              className="h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs flex items-center space-x-1 sm:space-x-1.5 transition-colors shadow-sm cursor-pointer"
             >
-              <span>Layar Panggung</span>
+              <span className="hidden sm:inline">Layar Panggung</span>
+              <span className="sm:hidden">Layar</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </button>
           ) : (
@@ -252,9 +254,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="h-8.5 px-3 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs flex items-center space-x-1.5 transition-colors shadow-sm cursor-pointer"
+              className="h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs flex items-center space-x-1 sm:space-x-1.5 transition-colors shadow-sm cursor-pointer"
             >
-              <span>Layar Panggung</span>
+              <span className="hidden sm:inline">Layar Panggung</span>
+              <span className="sm:hidden">Layar</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           )}
@@ -264,7 +267,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
       {/* ========================================================
           2. UNIFIED TOOLBAR: Category, Screen, Sort & Round Selector
       ======================================================== */}
-      <div className="bg-[#111216] border-b border-zinc-800/80 px-3 md:px-6 py-2 shrink-0 flex items-center justify-between gap-2.5 sticky top-13 z-30 overflow-x-auto no-scrollbar">
+      <div className="bg-[#111216] border-b border-zinc-800/80 px-2 sm:px-4 md:px-6 py-2 shrink-0 flex flex-wrap lg:flex-nowrap items-center justify-between gap-2 sticky top-12 md:top-13 z-30">
         {/* Left: Category Switcher */}
         <div className="flex items-center space-x-2 shrink-0">
           <div className="flex h-9 bg-zinc-950 p-0.5 rounded-lg border border-zinc-800">
@@ -544,8 +547,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onOpenStage }) => {
       {/* ========================================================
           3. MAIN CONTENT: THE 5 PODIUM CARDS (Pixel-Aligned Grid)
       ======================================================== */}
-      <main className="flex-1 w-full max-w-[1540px] mx-auto px-4 md:px-6 py-4 overflow-x-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 min-w-[1080px] xl:min-w-0">
+      <main className="flex-1 w-full max-w-[1540px] mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4 w-full">
           {currentTeams.map((team) => (
             <TeamCard
               key={team.id}

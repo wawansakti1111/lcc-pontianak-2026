@@ -113,7 +113,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
       transition={{
         layout: { duration: 0.6, type: 'spring', stiffness: 95, damping: 16 }
       }}
-      className="flex-1 flex flex-col items-center justify-end relative px-1 sm:px-1.5 md:px-2 max-w-[295px] min-w-[175px]"
+      className="flex-1 flex flex-col items-center justify-end relative px-1 sm:px-1.5 md:px-2 max-w-[295px] min-w-[175px] shrink-0 md:shrink snap-center"
     >
       {/* ========================================================
           1. ELEVATING STACK (AVATAR + 3D NEON BLOCK)

@@ -126,7 +126,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
 
   return (
     <div
-      className={`bg-[#131418] rounded-2xl border flex flex-col justify-between transition-all min-w-[215px] shadow-xl shadow-black/50 relative overflow-hidden group select-none min-h-[580px] ${
+      className={`bg-[#131418] rounded-2xl border flex flex-col justify-between transition-all w-full min-w-0 shadow-xl shadow-black/50 relative overflow-hidden group select-none min-h-[520px] sm:min-h-[580px] ${
         isLeadingScore
           ? 'border-amber-500/50 ring-1 ring-amber-400/40'
           : 'border-zinc-800/90 hover:border-zinc-700'
