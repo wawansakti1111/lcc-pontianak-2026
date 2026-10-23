@@ -9,7 +9,9 @@ import {
   saveLocalStageConfig,
   getLocalHistory,
   saveLocalHistory,
-  localChannel
+  localChannel,
+  setActiveRealtimeChannel,
+  broadcastScoreboardEvent
 } from '../services/supabaseService';
 
 export function useScoreboardData() {
@@ -21,7 +23,7 @@ export function useScoreboardData() {
     return getSupabaseClient() ? 'connecting' : 'local_simulation';
   });
 
-  // Keep a ref of teams to calculate score changes accurately
+  // Keep refs of teams and config to calculate score changes accurately and avoid stale closures
   const teamsRef = useRef<Team[]>(teams);
   useEffect(() => {
     teamsRef.current = teams;
@@ -86,80 +88,97 @@ export function useScoreboardData() {
     }
   }, []);
 
-  // Sync with Supabase Realtime or Local Mode
+  // Helper to handle incoming team changes with delta animations
+  const applyIncomingTeams = useCallback(
+    (incoming: Team[]) => {
+      incoming.forEach((newT) => {
+        const oldT = teamsRef.current.find((t) => t.id === newT.id);
+        if (oldT && oldT.score !== newT.score) {
+          triggerDelta(newT.id, newT.score - oldT.score);
+        }
+      });
+      setTeams(incoming);
+      saveLocalTeams(incoming);
+    },
+    [triggerDelta]
+  );
+
+  // Helper to handle incoming config changes
+  const applyIncomingConfig = useCallback(
+    (incoming: StageConfig) => {
+      if (incoming.confetti_ts && incoming.confetti_ts > lastConfettiRef.current) {
+        lastConfettiRef.current = incoming.confetti_ts;
+        fireConfetti();
+      }
+      setStageConfig(incoming);
+      saveLocalStageConfig(incoming);
+    },
+    [fireConfetti]
+  );
+
+  // 1. ALWAYS ACTIVE: Cross-tab & local storage synchronization (0ms latency for same browser)
+  useEffect(() => {
+    const handleBroadcast = (e: MessageEvent) => {
+      if (!e.data) return;
+      if ((e.data.type === 'TEAMS_UPDATED' || e.data.type === 'TEAMS_UPDATE') && Array.isArray(e.data.teams || e.data.data)) {
+        const list = (e.data.teams || e.data.data) as Team[];
+        applyIncomingTeams(list);
+      } else if ((e.data.type === 'CONFIG_UPDATED' || e.data.type === 'CONFIG_UPDATE') && (e.data.config || e.data.data)) {
+        const cfg = (e.data.config || e.data.data) as StageConfig;
+        applyIncomingConfig(cfg);
+      } else if (e.data.type === 'RESET') {
+        const resetTeams = teamsRef.current.map((t) => ({ ...t, score: 0 }));
+        setTeams(resetTeams);
+        setHistory([]);
+      }
+    };
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'lcc_2026_teams' && e.newValue) {
+        try {
+          const incoming: Team[] = JSON.parse(e.newValue);
+          applyIncomingTeams(incoming);
+        } catch {
+          // ignore
+        }
+      } else if (e.key === 'lcc_2026_config' && e.newValue) {
+        try {
+          const newConfig: StageConfig = JSON.parse(e.newValue);
+          applyIncomingConfig(newConfig);
+        } catch {
+          // ignore
+        }
+      } else if (e.key === 'lcc_2026_history' && e.newValue) {
+        try {
+          const newHistory: ScoreHistoryItem[] = JSON.parse(e.newValue);
+          setHistory(newHistory);
+        } catch {
+          // ignore
+        }
+      }
+    };
+
+    localChannel?.addEventListener('message', handleBroadcast);
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      localChannel?.removeEventListener('message', handleBroadcast);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [applyIncomingTeams, applyIncomingConfig]);
+
+  // 2. SUPABASE REALTIME (WebSockets Broadcast + Postgres Changes) + BACKGROUND HEARTBEAT POLLING
   useEffect(() => {
     const supabase = getSupabaseClient();
-
     if (!supabase) {
       setConnectionStatus('local_simulation');
-
-      // Local cross-tab broadcast channel listener
-      const handleBroadcast = (e: MessageEvent) => {
-        if (!e.data) return;
-        if (e.data.type === 'TEAMS_UPDATED' && Array.isArray(e.data.teams)) {
-          // Compare score changes for delta animations
-          const incoming: Team[] = e.data.teams;
-          incoming.forEach((newT) => {
-            const oldT = teamsRef.current.find((t) => t.id === newT.id);
-            if (oldT && oldT.score !== newT.score) {
-              triggerDelta(newT.id, newT.score - oldT.score);
-            }
-          });
-          setTeams(incoming);
-        } else if (e.data.type === 'CONFIG_UPDATED' && e.data.config) {
-          const newConfetti = e.data.config.confetti_ts;
-          if (newConfetti && newConfetti > lastConfettiRef.current) {
-            lastConfettiRef.current = newConfetti;
-            fireConfetti();
-          }
-          setStageConfig(e.data.config);
-        }
-      };
-
-      // Native browser storage event listener for cross-tab sync
-      const handleStorage = (e: StorageEvent) => {
-        if (e.key === 'lcc_2026_teams' && e.newValue) {
-          try {
-            const incoming: Team[] = JSON.parse(e.newValue);
-            incoming.forEach((newT) => {
-              const oldT = teamsRef.current.find((t) => t.id === newT.id);
-              if (oldT && oldT.score !== newT.score) {
-                triggerDelta(newT.id, newT.score - oldT.score);
-              }
-            });
-            setTeams(incoming);
-          } catch {
-            // ignore
-          }
-        } else if (e.key === 'lcc_2026_config' && e.newValue) {
-          try {
-            const newConfig: StageConfig = JSON.parse(e.newValue);
-            setStageConfig(newConfig);
-          } catch {
-            // ignore
-          }
-        } else if (e.key === 'lcc_2026_history' && e.newValue) {
-          try {
-            const newHistory: ScoreHistoryItem[] = JSON.parse(e.newValue);
-            setHistory(newHistory);
-          } catch {
-            // ignore
-          }
-        }
-      };
-
-      localChannel?.addEventListener('message', handleBroadcast);
-      window.addEventListener('storage', handleStorage);
-      return () => {
-        localChannel?.removeEventListener('message', handleBroadcast);
-        window.removeEventListener('storage', handleStorage);
-      };
+      return;
     }
 
     setConnectionStatus('connecting');
 
-    // Fetch initial data from Supabase
-    async function fetchInitial() {
+    // Silent background fetch to ensure state parity
+    async function fetchFromCloud(isInitial = false) {
       if (!supabase) return;
       try {
         const [teamsRes, configRes, histRes] = await Promise.all([
@@ -169,23 +188,43 @@ export function useScoreboardData() {
         ]);
 
         if (teamsRes.error) {
-          console.error('Supabase fetch error:', teamsRes.error);
-          setConnectionStatus('local_simulation');
+          console.warn('Supabase fetch error:', teamsRes.error);
           return;
         }
 
         if (teamsRes.data && teamsRes.data.length > 0) {
-          setTeams(teamsRes.data as Team[]);
-          saveLocalTeams(teamsRes.data as Team[]);
-        }
-        if (configRes.data) {
-          setStageConfig(configRes.data as StageConfig);
-          saveLocalStageConfig(configRes.data as StageConfig);
-          if (configRes.data.confetti_ts) {
-            lastConfettiRef.current = configRes.data.confetti_ts;
+          const cloudTeams = teamsRes.data as Team[];
+          // Compare with ref
+          let hasTeamDiff = isInitial;
+          if (!hasTeamDiff) {
+            hasTeamDiff = cloudTeams.some((ct) => {
+              const current = teamsRef.current.find((t) => t.id === ct.id);
+              return !current || current.score !== ct.score || current.team_name !== ct.team_name;
+            });
+          }
+          if (hasTeamDiff) {
+            applyIncomingTeams(cloudTeams);
           }
         }
-        if (histRes.data && histRes.data.length > 0) {
+
+        if (configRes.data) {
+          const cloudConfig = configRes.data as StageConfig;
+          let hasConfigDiff = isInitial;
+          if (!hasConfigDiff) {
+            const cur = stageConfigRef.current;
+            hasConfigDiff =
+              cur.active_category_view !== cloudConfig.active_category_view ||
+              cur.presentation_mode !== cloudConfig.presentation_mode ||
+              cur.sort_mode !== cloudConfig.sort_mode ||
+              cur.current_round_title !== cloudConfig.current_round_title ||
+              cur.confetti_ts !== cloudConfig.confetti_ts;
+          }
+          if (hasConfigDiff) {
+            applyIncomingConfig(cloudConfig);
+          }
+        }
+
+        if (histRes.data && (isInitial || histRes.data.length > 0)) {
           const mapped: ScoreHistoryItem[] = (histRes.data as any[]).map((row) => ({
             id: row.id,
             teamId: row.team_id,
@@ -200,105 +239,116 @@ export function useScoreboardData() {
           }));
           setHistory(mapped);
           saveLocalHistory(mapped);
-        } else if (histRes.data && histRes.data.length === 0) {
-          setHistory([]);
-          saveLocalHistory([]);
         }
+
         setConnectionStatus('connected');
       } catch (err) {
         console.error('Error fetching Supabase data:', err);
-        setConnectionStatus('local_simulation');
       }
     }
 
-    fetchInitial();
+    // Initial load
+    fetchFromCloud(true);
 
-    // Setup Supabase Realtime subscription
-    const channel = supabase
-      .channel('realtime_lcc_scoreboard')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'teams' },
-        (payload) => {
-          if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-            const updatedTeam = payload.new as Team;
-            setTeams((prev) => {
-              const prevTeam = prev.find((t) => t.id === updatedTeam.id);
-              if (prevTeam && prevTeam.score !== updatedTeam.score) {
-                triggerDelta(updatedTeam.id, updatedTeam.score - prevTeam.score);
-              }
-              const next = prev.map((t) => (t.id === updatedTeam.id ? updatedTeam : t));
-              saveLocalTeams(next);
-              return next;
-            });
-          }
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'stage_config' },
-        (payload) => {
-          if (payload.new) {
-            const newConfig = payload.new as StageConfig;
-            if (newConfig.confetti_ts && newConfig.confetti_ts > lastConfettiRef.current) {
-              lastConfettiRef.current = newConfig.confetti_ts;
-              fireConfetti();
+    // Setup Supabase Realtime channel with Peer Broadcast & Postgres Changes
+    const channel = supabase.channel('realtime_lcc_scoreboard', {
+      config: {
+        broadcast: { ack: false, self: false }
+      }
+    });
+
+    // A. Ultra-low latency (< 50ms) direct WebSocket broadcast across devices
+    channel.on('broadcast', { event: 'LCC_SYNC' }, (payload: any) => {
+      const data = payload?.payload;
+      if (!data) return;
+
+      if ((data.type === 'TEAMS_UPDATE' || data.type === 'TEAMS_UPDATED') && Array.isArray(data.data)) {
+        applyIncomingTeams(data.data as Team[]);
+      } else if ((data.type === 'CONFIG_UPDATE' || data.type === 'CONFIG_UPDATED') && data.data) {
+        applyIncomingConfig(data.data as StageConfig);
+      } else if (data.type === 'RESET') {
+        const resetTeams = teamsRef.current.map((t) => ({ ...t, score: 0 }));
+        setTeams(resetTeams);
+        setHistory([]);
+      }
+    });
+
+    // B. Postgres Changes subscription
+    channel
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, (payload) => {
+        if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+          const updatedTeam = payload.new as Team;
+          setTeams((prev) => {
+            const prevTeam = prev.find((t) => t.id === updatedTeam.id);
+            if (prevTeam && prevTeam.score !== updatedTeam.score) {
+              triggerDelta(updatedTeam.id, updatedTeam.score - prevTeam.score);
             }
-            setStageConfig(newConfig);
-            saveLocalStageConfig(newConfig);
-          }
+            const next = prev.map((t) => (t.id === updatedTeam.id ? updatedTeam : t));
+            saveLocalTeams(next);
+            return next;
+          });
         }
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'score_history' },
-        (payload) => {
-          if (payload.eventType === 'INSERT' && payload.new) {
-            const row = payload.new as any;
-            const item: ScoreHistoryItem = {
-              id: row.id,
-              teamId: row.team_id,
-              regu: row.regu,
-              category: row.category,
-              teamName: row.team_name,
-              roundTitle: row.round_title,
-              previousScore: row.previous_score,
-              delta: row.delta,
-              newScore: row.new_score,
-              timestamp: Number(row.timestamp)
-            };
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'stage_config' }, (payload) => {
+        if (payload.new) {
+          applyIncomingConfig(payload.new as StageConfig);
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'score_history' }, (payload) => {
+        if (payload.eventType === 'INSERT' && payload.new) {
+          const row = payload.new as any;
+          const item: ScoreHistoryItem = {
+            id: row.id,
+            teamId: row.team_id,
+            regu: row.regu,
+            category: row.category,
+            teamName: row.team_name,
+            roundTitle: row.round_title,
+            previousScore: row.previous_score,
+            delta: row.delta,
+            newScore: row.new_score,
+            timestamp: Number(row.timestamp)
+          };
+          setHistory((prev) => {
+            if (prev.some((h) => h.id === item.id)) return prev;
+            const next = [item, ...prev].slice(0, 50);
+            saveLocalHistory(next);
+            return next;
+          });
+        } else if (payload.eventType === 'DELETE') {
+          if (payload.old && (payload.old as any).id) {
             setHistory((prev) => {
-              if (prev.some((h) => h.id === item.id)) return prev;
-              const next = [item, ...prev].slice(0, 50);
+              const next = prev.filter((h) => h.id !== (payload.old as any).id);
               saveLocalHistory(next);
               return next;
             });
-          } else if (payload.eventType === 'DELETE') {
-            if (payload.old && (payload.old as any).id) {
-              setHistory((prev) => {
-                const next = prev.filter((h) => h.id !== (payload.old as any).id);
-                saveLocalHistory(next);
-                return next;
-              });
-            } else {
-              setHistory([]);
-              saveLocalHistory([]);
-            }
+          } else {
+            setHistory([]);
+            saveLocalHistory([]);
           }
         }
-      )
+      })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           setConnectionStatus('connected');
-        } else if (status === 'CHANNEL_ERROR') {
-          setConnectionStatus('error');
+          setActiveRealtimeChannel(channel);
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          console.warn(`Supabase channel ${status}, will poll as backup`);
+          setActiveRealtimeChannel(null);
         }
       });
 
+    // C. Fail-safe Polling Heartbeat every 2.5 seconds
+    const pollInterval = setInterval(() => {
+      fetchFromCloud(false);
+    }, 2500);
+
     return () => {
+      clearInterval(pollInterval);
+      setActiveRealtimeChannel(null);
       supabase.removeChannel(channel);
     };
-  }, [triggerDelta, fireConfetti]);
+  }, [applyIncomingTeams, applyIncomingConfig, triggerDelta]);
 
   // Actions
   const updateScore = useCallback(
@@ -309,7 +359,7 @@ export function useScoreboardData() {
       const previousScore = targetTeam.score;
       const newScore = previousScore + delta;
 
-      // Create history item for undo
+      // 1. Create history item
       const historyItem: ScoreHistoryItem = {
         id: `${Date.now()}-${Math.random()}`,
         teamId,
@@ -329,14 +379,17 @@ export function useScoreboardData() {
 
       triggerDelta(teamId, delta);
 
-      // Local optimistic update
+      // 2. Local optimistic update
       const nextTeams = teamsRef.current.map((t) =>
         t.id === teamId ? { ...t, score: newScore } : t
       );
       setTeams(nextTeams);
       saveLocalTeams(nextTeams);
 
-      // Cloud sync
+      // 3. Instant Peer & Cross-tab Broadcast
+      broadcastScoreboardEvent('TEAMS_UPDATE', nextTeams);
+
+      // 4. Cloud DB Persist
       const supabase = getSupabaseClient();
       if (supabase) {
         try {
@@ -396,6 +449,8 @@ export function useScoreboardData() {
       setTeams(nextTeams);
       saveLocalTeams(nextTeams);
 
+      broadcastScoreboardEvent('TEAMS_UPDATE', nextTeams);
+
       const supabase = getSupabaseClient();
       if (supabase) {
         try {
@@ -439,13 +494,15 @@ export function useScoreboardData() {
     setHistory(restHistory);
     saveLocalHistory(restHistory);
 
+    broadcastScoreboardEvent('TEAMS_UPDATE', nextTeams);
+
     const supabase = getSupabaseClient();
     if (supabase) {
       try {
-        await supabase
-          .from('teams')
-          .update({ score: lastItem.previousScore })
-          .eq('id', lastItem.teamId);
+        await Promise.all([
+          supabase.from('teams').update({ score: lastItem.previousScore }).eq('id', lastItem.teamId),
+          supabase.from('score_history').delete().eq('id', lastItem.id)
+        ]);
       } catch (err) {
         console.error('Failed to undo score in Supabase:', err);
       }
@@ -459,6 +516,8 @@ export function useScoreboardData() {
       );
       setTeams(nextTeams);
       saveLocalTeams(nextTeams);
+
+      broadcastScoreboardEvent('TEAMS_UPDATE', nextTeams);
 
       const supabase = getSupabaseClient();
       if (supabase) {
@@ -474,9 +533,12 @@ export function useScoreboardData() {
 
   const updateStageConfig = useCallback(
     async (updates: Partial<StageConfig>) => {
-      const nextConfig = { ...stageConfig, ...updates };
+      const nextConfig = { ...stageConfigRef.current, ...updates };
       setStageConfig(nextConfig);
       saveLocalStageConfig(nextConfig);
+
+      // Instant Broadcast to Stage
+      broadcastScoreboardEvent('CONFIG_UPDATE', nextConfig);
 
       const supabase = getSupabaseClient();
       if (supabase) {
@@ -487,7 +549,7 @@ export function useScoreboardData() {
         }
       }
     },
-    [stageConfig]
+    []
   );
 
   const triggerConfettiRemote = useCallback(async () => {
@@ -495,9 +557,11 @@ export function useScoreboardData() {
     fireConfetti();
     lastConfettiRef.current = timestamp;
 
-    const nextConfig = { ...stageConfig, confetti_ts: timestamp };
+    const nextConfig = { ...stageConfigRef.current, confetti_ts: timestamp };
     setStageConfig(nextConfig);
     saveLocalStageConfig(nextConfig);
+
+    broadcastScoreboardEvent('CONFIG_UPDATE', nextConfig);
 
     const supabase = getSupabaseClient();
     if (supabase) {
@@ -507,7 +571,7 @@ export function useScoreboardData() {
         console.error('Failed to trigger confetti in Supabase:', err);
       }
     }
-  }, [fireConfetti, stageConfig]);
+  }, [fireConfetti]);
 
   const resetAllScores = useCallback(async () => {
     const nextTeams = teamsRef.current.map((t) => ({ ...t, score: 0 }));
@@ -515,6 +579,8 @@ export function useScoreboardData() {
     saveLocalTeams(nextTeams);
     setHistory([]);
     saveLocalHistory([]);
+
+    broadcastScoreboardEvent('RESET', null);
 
     const supabase = getSupabaseClient();
     if (supabase) {

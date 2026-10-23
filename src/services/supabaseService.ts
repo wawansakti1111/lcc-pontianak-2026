@@ -117,6 +117,34 @@ let currentKey: string = '';
 const DEFAULT_SUPABASE_URL = 'https://kdipssewqkwvxqkiqubz.supabase.co';
 const DEFAULT_SUPABASE_KEY = 'sb_publishable_ICZ4LrEFyENXIVaxpGlfBw_6Kl7h3At';
 
+let activeRealtimeChannel: any = null;
+
+export function setActiveRealtimeChannel(channel: any) {
+  activeRealtimeChannel = channel;
+}
+
+export function broadcastScoreboardEvent(type: string, data: any) {
+  // 1. Post to local BroadcastChannel (instant 0ms cross-tab sync on same computer)
+  try {
+    localChannel?.postMessage({ type, data });
+  } catch (e) {
+    console.warn('Local broadcast error:', e);
+  }
+
+  // 2. Broadcast via Supabase Realtime WebSocket (sub-second peer-to-peer across phones & laptops)
+  if (activeRealtimeChannel) {
+    try {
+      activeRealtimeChannel.send({
+        type: 'broadcast',
+        event: 'LCC_SYNC',
+        payload: { type, data, ts: Date.now() }
+      });
+    } catch (err) {
+      console.warn('Supabase realtime broadcast error:', err);
+    }
+  }
+}
+
 export function getStoredSupabaseConfig() {
   const url = localStorage.getItem(STORAGE_KEYS.SUPABASE_URL) || DEFAULT_SUPABASE_URL;
   const key = localStorage.getItem(STORAGE_KEYS.SUPABASE_KEY) || DEFAULT_SUPABASE_KEY;

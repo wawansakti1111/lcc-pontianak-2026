@@ -40,63 +40,69 @@ export const StageHeader: React.FC<StageHeaderProps> = ({ stageConfig }) => {
   return (
     <header className="relative w-full max-w-[100vw] overflow-x-hidden z-20 flex flex-col items-center justify-start pt-2 sm:pt-3 pb-1 select-none px-2">
       {/* 1. White Frosted Sponsor / Organizer Pill */}
-      <div className="bg-white/95 backdrop-blur-md px-2.5 sm:px-6 py-1 sm:py-1.5 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-white/80 flex items-center space-x-1.5 sm:space-x-4 max-w-[92vw] overflow-x-auto no-scrollbar shrink-0">
+      <div className="bg-white/95 backdrop-blur-md px-3 sm:px-6 py-1 sm:py-1.5 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-white/80 flex items-center justify-center space-x-2 sm:space-x-4 max-w-[95vw] overflow-x-auto no-scrollbar shrink-0">
         {/* Logo 1: Pemkot Pontianak */}
         <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
-          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-600 flex items-center justify-center text-[7px] sm:text-[9px] font-black text-white shadow-sm ring-1 ring-emerald-700">
-            PTK
-          </div>
+          <img
+            src="/logos/logo-pemkot.png"
+            alt="Pemkot Pontianak"
+            className="h-5 sm:h-7 w-auto object-contain"
+          />
           <span className="text-[8px] sm:text-[11px] font-extrabold text-slate-800 tracking-wider">
             <span className="sm:hidden">PEMKOT</span>
             <span className="hidden sm:inline">PEMKOT PONTIANAK</span>
           </span>
         </div>
 
-        <div className="w-0.5 h-2.5 sm:h-3 bg-slate-300 rounded-full shrink-0" />
+        <div className="w-px h-3.5 sm:h-4.5 bg-slate-300 shrink-0" />
 
         {/* Logo 2: Disporapar */}
         <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
-          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600 flex items-center justify-center text-[7px] sm:text-[9px] font-black text-white shadow-sm ring-1 ring-blue-700">
-            DSP
-          </div>
-          <span className="text-[8px] sm:text-[11px] font-extrabold text-slate-800 tracking-wider">
-            DISPORAPAR
-          </span>
+          <img
+            src="/logos/logo-disporapar.png"
+            alt="Disporapar Kota Pontianak"
+            className="h-4 sm:h-6 w-auto object-contain"
+          />
         </div>
 
-        <div className="w-0.5 h-2.5 sm:h-3 bg-slate-300 rounded-full shrink-0" />
+        <div className="w-px h-3.5 sm:h-4.5 bg-slate-300 shrink-0" />
 
         {/* Logo 3: HUT 255 Pontianak */}
         <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
-          <span className="text-[8px] sm:text-[11px] font-black text-amber-500 whitespace-nowrap">
-            HUT 255
-          </span>
-          <span className="hidden sm:inline text-[9px] sm:text-[10px] font-semibold text-slate-600 whitespace-nowrap">
-            Tangguh Bersahabat
-          </span>
+          <img
+            src="/logos/logo-hut255.png"
+            alt="HUT 255 Pontianak"
+            className="h-5 sm:h-7 w-auto object-contain"
+          />
         </div>
 
-        <div className="w-0.5 h-2.5 sm:h-3 bg-slate-300 rounded-full shrink-0" />
+        <div className="w-px h-3.5 sm:h-4.5 bg-slate-300 shrink-0" />
 
-        {/* Logo 4: Raja CreArt */}
+        {/* Logo 4: RAJA Project */}
         <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
-          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded bg-purple-700 flex items-center justify-center text-[7px] sm:text-[8px] font-black text-yellow-300 shadow-sm">
-            RCA
-          </div>
-          <span className="text-[8px] sm:text-[11px] font-extrabold text-purple-900 tracking-wider whitespace-nowrap">
-            RAJA CREART
-          </span>
+          <img
+            src="/logos/logo-raja.png"
+            alt="RAJA Project"
+            className="h-4 sm:h-6 w-auto object-contain"
+          />
         </div>
       </div>
 
-      {/* 2. Main Title (Two lines, 3D Embossed White-Blue Typography) */}
-      <div className="flex flex-col items-center leading-none mt-1 sm:mt-2.5 text-center px-1 max-w-[94vw]">
-        <h1 className="text-base sm:text-2xl md:text-3xl lg:text-[40px] font-black tracking-wide uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-50 to-blue-200 drop-shadow-[0_4px_12px_rgba(30,64,175,0.7)] filter">
-          LOMBA CERDAS CERMAT
-        </h1>
-        <h2 className="text-base sm:text-2xl md:text-3xl lg:text-[40px] font-black tracking-wide uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-50 to-blue-200 drop-shadow-[0_4px_12px_rgba(30,64,175,0.7)] filter mt-0.5 sm:mt-1">
-          PEMUDA KOTA PONTIANAK 2026
-        </h2>
+      {/* 2. Main Title with Official Event Emblem Logo */}
+      <div className="flex items-center justify-center gap-2 sm:gap-4 mt-1 sm:mt-2 text-center px-1 max-w-[94vw]">
+        <img
+          src="/logos/logo-lcc.png"
+          alt="Logo LCC Pemuda Pontianak 2026"
+          className="h-9 sm:h-14 md:h-16 w-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.4)] shrink-0"
+        />
+        <div className="flex flex-col items-center sm:items-start leading-none text-center sm:text-left">
+          <h1 className="text-sm sm:text-2xl md:text-3xl lg:text-[36px] font-black tracking-wide uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-50 to-blue-200 drop-shadow-[0_4px_12px_rgba(30,64,175,0.7)] filter">
+            LOMBA CERDAS CERMAT
+          </h1>
+          <h2 className="text-sm sm:text-2xl md:text-3xl lg:text-[36px] font-black tracking-wide uppercase text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-50 to-blue-200 drop-shadow-[0_4px_12px_rgba(30,64,175,0.7)] filter mt-0.5 sm:mt-1">
+            PEMUDA KOTA PONTIANAK 2026
+          </h2>
+        </div>
       </div>
 
       {/* 3. Golden Laurel Wreath Ribbon (Babak Aktif) */}

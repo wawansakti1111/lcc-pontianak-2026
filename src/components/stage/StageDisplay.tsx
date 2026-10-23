@@ -13,6 +13,11 @@ export const StageDisplay: React.FC = () => {
   const [mobileMode, setMobileMode] = useState<'cards' | 'podium'>('cards');
   const [mobileCategoryOverride, setMobileCategoryOverride] = useState<'mahasiswa_umum' | 'siswa_sma' | null>(null);
 
+  // When admin updates category view from console, reset local mobile override so stage syncs immediately
+  React.useEffect(() => {
+    setMobileCategoryOverride(null);
+  }, [stageConfig.active_category_view]);
+
   // Hidden double-click fullscreen handler for technician/operator convenience
   const handleDoubleClick = () => {
     if (!document.fullscreenElement) {
