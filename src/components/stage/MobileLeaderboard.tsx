@@ -145,6 +145,7 @@ const MobileCardItem: React.FC<{
               src={team.photo_url || '/placeholder-team.png'}
               alt={team.team_name}
               className="w-full h-full object-cover object-center rounded-lg sm:rounded-xl bg-slate-950"
+              loading="eager"
               onError={(e) => {
                 e.currentTarget.src = '/placeholder-team.png';
               }}
