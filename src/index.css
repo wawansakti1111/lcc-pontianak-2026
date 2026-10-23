@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .text-stroke-dark {
+    -webkit-text-stroke: 1.5px #1a103c;
+  }
+  
+  .text-stroke-dark-thick {
+    -webkit-text-stroke: 2.5px #1a103c;
+  }
+
+  .text-gold-gradient {
+    background: linear-gradient(180deg, #FFF066 0%, #FFD000 40%, #F59E0B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .perspective-stage {
+    perspective: 700px;
+    perspective-origin: 50% 85%;
+  }
+
+  .grid-floor-3d {
+    background-image: 
+      linear-gradient(to right, rgba(72, 240, 232, 0.35) 2px, transparent 2px),
+      linear-gradient(to bottom, rgba(72, 240, 232, 0.35) 2px, transparent 2px);
+    background-size: 60px 60px;
+    transform: rotateX(68deg) translateZ(0);
+    transform-origin: 50% 100%;
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 25px rgba(255, 208, 0, 0.65), 0 0 50px rgba(245, 158, 11, 0.4);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(72, 240, 232, 0.5);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Custom Stage Background: Original Vibrant Grand Stage */
+.main-stage-bg {
+  background: linear-gradient(115deg, #6236FF 0%, #7B52FF 35%, #4EA8DE 70%, #48F0E8 100%);
+}
+
+/* Shimmer Light Reflection */
+@keyframes shimmerWave {
+  0% {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+}
+
+.animate-shimmer-wave {
+  animation: shimmerWave 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
