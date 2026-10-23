@@ -146,7 +146,7 @@ export const StageDisplay: React.FC = () => {
           </div>
         ) : (
           /* Single Category 5 Columns View (Matching Reference Mockup 1:1) */
-          <div className="w-full h-full flex items-end justify-center gap-2 sm:gap-4 md:gap-5 lg:gap-6 max-w-6xl pb-3 sm:pb-5 md:pb-7">
+          <div className="w-full h-full flex items-end justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 max-w-[1440px] pb-3 sm:pb-5 md:pb-7">
             {sortTeams(
               stageConfig.active_category_view === 'mahasiswa_umum' ? mhsTeams : smaTeams
             ).map((team) => {

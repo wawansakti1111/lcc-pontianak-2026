@@ -113,7 +113,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
       transition={{
         layout: { duration: 0.6, type: 'spring', stiffness: 95, damping: 16 }
       }}
-      className="flex-1 flex flex-col items-center justify-end relative px-1 sm:px-1.5 md:px-2 max-w-[230px] min-w-[145px]"
+      className="flex-1 flex flex-col items-center justify-end relative px-1 sm:px-1.5 md:px-2 max-w-[260px] min-w-[165px]"
     >
       {/* ========================================================
           1. ELEVATING STACK (AVATAR + 3D NEON BLOCK)
@@ -252,13 +252,13 @@ export const NeonBar: React.FC<NeonBarProps> = ({
             </span>
           </div>
 
-          {/* Team Name */}
-          <div className="text-xs sm:text-sm md:text-base font-black text-white leading-tight line-clamp-1 max-w-full drop-shadow">
+          {/* Team Name (No Truncation - Equal Height Alignment) */}
+          <div className="text-xs sm:text-sm md:text-[15px] lg:text-base font-black text-white leading-tight text-center max-w-full drop-shadow px-1 min-h-[2.4rem] flex items-center justify-center">
             {team.team_name}
           </div>
 
-          {/* Institution / School */}
-          <div className="text-[9px] sm:text-[10px] md:text-[11px] font-medium text-slate-300 truncate max-w-full mt-0.5">
+          {/* Institution / School (No Truncation - Clean Full Name) */}
+          <div className="text-[10px] sm:text-[11px] md:text-xs font-semibold text-slate-300 text-center leading-snug max-w-full mt-0.5 px-0.5 min-h-[1.85rem] flex items-center justify-center">
             {team.institution}
           </div>
         </div>
