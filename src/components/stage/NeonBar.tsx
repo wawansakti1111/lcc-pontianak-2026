@@ -113,7 +113,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
       transition={{
         layout: { duration: 0.6, type: 'spring', stiffness: 95, damping: 16 }
       }}
-      className="flex-1 flex flex-col items-center justify-end relative px-1 sm:px-1.5 md:px-2 max-w-[260px] min-w-[165px]"
+      className="flex-1 flex flex-col items-center justify-end relative px-1 sm:px-1.5 md:px-2 max-w-[295px] min-w-[175px]"
     >
       {/* ========================================================
           1. ELEVATING STACK (AVATAR + 3D NEON BLOCK)
@@ -237,29 +237,34 @@ export const NeonBar: React.FC<NeonBarProps> = ({
       ======================================================== */}
       <div className="w-full z-20 px-0.5 pt-1.5">
         <div
-          className={`rounded-2xl py-2.5 px-2.5 text-center shadow-2xl border transition-all duration-300 bg-slate-950/95 ${theme.cardBorder}`}
+          className={`rounded-2xl py-3 px-2 sm:px-3 text-center shadow-2xl border-2 transition-all duration-300 bg-slate-950/95 backdrop-blur-md ${theme.cardBorder}`}
+          style={{
+            boxShadow: `0 12px 35px rgba(0,0,0,0.85), 0 0 15px ${theme.glow}`
+          }}
         >
           {/* Regu Badge & Rank */}
-          <div className="flex items-center justify-center space-x-1.5 mb-1">
+          <div className="flex items-center justify-center space-x-1.5 mb-1.5">
             <span
-              className="text-[10px] md:text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full text-white shadow-sm"
+              className="text-[11px] sm:text-xs font-black uppercase tracking-wider px-3 py-0.5 rounded-full text-white shadow-md"
               style={{ background: theme.gradient }}
             >
               {team.regu}
             </span>
-            <span className="text-[10px] font-bold text-slate-400">
+            <span className="text-[11px] font-extrabold text-slate-300">
               #{rank}
             </span>
           </div>
 
-          {/* Team Name (No Truncation - Equal Height Alignment) */}
-          <div className="text-xs sm:text-sm md:text-[15px] lg:text-base font-black text-white leading-tight text-center max-w-full drop-shadow px-1 min-h-[2.4rem] flex items-center justify-center">
+          {/* Team Name (Extra Bold & High Visibility) */}
+          <div className="text-sm sm:text-base md:text-[18px] lg:text-[20px] font-black text-white leading-tight text-center max-w-full drop-shadow-[0_2px_5px_rgba(0,0,0,0.95)] px-0.5 min-h-[2.85rem] flex items-center justify-center">
             {team.team_name}
           </div>
 
-          {/* Institution / School (No Truncation - Clean Full Name) */}
-          <div className="text-[10px] sm:text-[11px] md:text-xs font-semibold text-slate-300 text-center leading-snug max-w-full mt-0.5 px-0.5 min-h-[1.85rem] flex items-center justify-center">
-            {team.institution}
+          {/* Institution / School (High-Contrast Luminous Badge) */}
+          <div className="mt-1 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/20 min-h-[2.1rem] flex items-center justify-center shadow-inner">
+            <span className="text-xs sm:text-[13px] md:text-sm lg:text-[14px] font-extrabold text-amber-300 text-center leading-tight tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              {team.institution}
+            </span>
           </div>
         </div>
 

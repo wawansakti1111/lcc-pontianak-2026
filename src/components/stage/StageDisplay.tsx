@@ -25,6 +25,18 @@ export const StageDisplay: React.FC = () => {
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const urlMode = (searchParams?.get('mode') as 'scoreboard' | 'recap' | 'history') || null;
 
+  const rawCat = searchParams?.get('category') || searchParams?.get('cat');
+  const urlCategory: 'mahasiswa_umum' | 'siswa_sma' | 'dual' | null =
+    rawCat === 'sma' || rawCat === 'siswa_sma'
+      ? 'siswa_sma'
+      : rawCat === 'mhs' || rawCat === 'mahasiswa' || rawCat === 'mahasiswa_umum'
+      ? 'mahasiswa_umum'
+      : rawCat === 'dual'
+      ? 'dual'
+      : null;
+
+  const currentCategoryView = urlCategory || stageConfig.active_category_view || 'mahasiswa_umum';
+
   const presentationMode =
     urlMode ||
     stageConfig.presentation_mode ||
@@ -81,18 +93,18 @@ export const StageDisplay: React.FC = () => {
       {/* ========================================================
           ZONA ATAS: HEADER & IDENTITAS PENYELENGGARA (~18%)
       ======================================================== */}
-      <StageHeader stageConfig={stageConfig} />
+      <StageHeader stageConfig={{ ...stageConfig, active_category_view: currentCategoryView }} />
 
       {/* ========================================================
           ZONA TENGAH: MAIN 5 PODIUMS / RECAP TABLE / HISTORY LOG (~72%)
       ======================================================== */}
-      <main className="relative flex-1 w-full max-w-[1360px] mx-auto px-4 sm:px-6 md:px-8 z-10 flex items-end justify-center pb-8 sm:pb-10 md:pb-12">
+      <main className="relative flex-1 w-full max-w-[1560px] mx-auto px-2 sm:px-4 md:px-6 z-10 flex items-end justify-center pb-8 sm:pb-10 md:pb-12">
         {presentationMode === 'history' ? (
           /* TV Broadcast Score History & Audit Log Mode */
           <StageHistoryLog
             teams={teams}
             history={history}
-            activeCategoryView={stageConfig.active_category_view}
+            activeCategoryView={currentCategoryView}
             currentRoundTitle={stageConfig.current_round_title || 'GRAND FINAL'}
           />
         ) : presentationMode === 'recap' ? (
@@ -100,10 +112,10 @@ export const StageDisplay: React.FC = () => {
           <StageRoundRecap
             teams={teams}
             history={history}
-            activeCategoryView={stageConfig.active_category_view}
+            activeCategoryView={currentCategoryView}
             currentRoundTitle={stageConfig.current_round_title || 'GRAND FINAL'}
           />
-        ) : stageConfig.active_category_view === 'dual' ? (
+        ) : currentCategoryView === 'dual' ? (
           /* Dual Arena Split Mode (Mahasiswa & SMA side by side) */
           <div className="w-full h-full flex items-end gap-6 md:gap-10">
             {/* Arena Mahasiswa */}
@@ -146,16 +158,16 @@ export const StageDisplay: React.FC = () => {
           </div>
         ) : (
           /* Single Category 5 Columns View (Matching Reference Mockup 1:1) */
-          <div className="w-full h-full flex items-end justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 max-w-[1440px] pb-3 sm:pb-5 md:pb-7">
+          <div className="w-full h-full flex items-end justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-5 max-w-[1540px] pb-3 sm:pb-5 md:pb-7">
             {sortTeams(
-              stageConfig.active_category_view === 'mahasiswa_umum' ? mhsTeams : smaTeams
+              currentCategoryView === 'mahasiswa_umum' ? mhsTeams : smaTeams
             ).map((team) => {
               const currentLeaderId =
-                stageConfig.active_category_view === 'mahasiswa_umum' ? mhsLeaderId : smaLeaderId;
+                currentCategoryView === 'mahasiswa_umum' ? mhsLeaderId : smaLeaderId;
               const currentMax =
-                stageConfig.active_category_view === 'mahasiswa_umum' ? mhsMaxScore : smaMaxScore;
+                currentCategoryView === 'mahasiswa_umum' ? mhsMaxScore : smaMaxScore;
               const currentRankMap =
-                stageConfig.active_category_view === 'mahasiswa_umum' ? mhsRankMap : smaRankMap;
+                currentCategoryView === 'mahasiswa_umum' ? mhsRankMap : smaRankMap;
 
               return (
                 <NeonBar
