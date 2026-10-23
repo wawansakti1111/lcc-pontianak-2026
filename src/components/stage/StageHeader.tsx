@@ -128,7 +128,7 @@ export const StageHeader: React.FC<StageHeaderProps> = ({ stageConfig }) => {
       </div>
 
       {/* 4. Sub-Pills: Category & Venue */}
-      <div className="mt-1 sm:mt-2 flex flex-wrap items-center justify-center gap-1 sm:gap-2 max-w-[94vw]">
+      <div className="mt-1 sm:mt-2 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 max-w-[94vw]">
         {/* Category Pill */}
         <div
           className={`px-2.5 sm:px-5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-xs font-black tracking-wider uppercase shadow-md flex items-center space-x-1 sm:space-x-1.5 border bg-gradient-to-r text-white ${badge.badgeClass}`}
