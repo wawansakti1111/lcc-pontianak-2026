@@ -72,12 +72,13 @@ export const NeonBar: React.FC<NeonBarProps> = ({
   const theme = PODIUM_THEMES[team.regu] || PODIUM_THEMES['Regu A'];
 
   // Calculate dynamic elevating height:
-  // - At score 0: dynamicRaise = 0px (base block height = 50px, matching reference)
-  // - At max score: elevates smoothly up to 200px
+  // - At score 0: dynamicRaise = 0px (base block height = 64px, handsome solid base, never looks sunken)
+  // - At max score: elevates smoothly up to 110px
+  // - Total height is clamped so photo + score never touches header text
   const safeMax = Math.max(maxCategoryScore, 500);
   const scoreRatio = Math.max(0, Math.min(team.score / safeMax, 1));
-  const dynamicRaise = Math.round(scoreRatio * 180);
-  const baseBlockHeight = 52; // Height of 3D block at score 0
+  const dynamicRaise = Math.round(scoreRatio * 110);
+  const baseBlockHeight = 64; // Height of 3D block at score 0
   const totalBarHeight = baseBlockHeight + dynamicRaise;
 
   // Animated counting for score
@@ -119,18 +120,8 @@ export const NeonBar: React.FC<NeonBarProps> = ({
           1. ELEVATING STACK (AVATAR + 3D NEON BLOCK)
       ======================================================== */}
       <div className="w-full relative flex flex-col items-center">
-        {/* Floating Avatar Photo & Grand Stadium Scoreboard */}
-        <motion.div
-          animate={{
-            y: -dynamicRaise
-          }}
-          transition={{
-            type: 'spring',
-            stiffness: 120,
-            damping: 18
-          }}
-          className="relative z-30 flex flex-col items-center -mb-6 pointer-events-none"
-        >
+        {/* Avatar Photo & Grand Stadium Scoreboard (Solidly docked on pedestal top cap, moves with pedestal) */}
+        <div className="relative z-30 flex flex-col items-center -mb-4 pointer-events-none">
           {/* Floating Delta Badge (+100 / -50) */}
           <AnimatePresence>
             {delta && (
@@ -157,7 +148,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
               initial={{ scale: 0, y: 8 }}
               animate={{ scale: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 200, damping: 10 }}
-              className="absolute -top-10 z-50 flex flex-col items-center filter drop-shadow-[0_0_16px_rgba(255,208,0,0.95)] animate-bounce"
+              className="absolute -top-9 z-50 flex flex-col items-center filter drop-shadow-[0_0_16px_rgba(255,208,0,0.95)] animate-bounce"
             >
               <span className="text-2xl md:text-3xl select-none">👑</span>
             </motion.div>
@@ -165,7 +156,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
 
           {/* 1. Large High-Resolution Team Photo Frame (Wide Squircle to showcase all 3 members clearly) */}
           <div
-            className={`w-32 h-24 sm:w-36 sm:h-28 md:w-40 md:h-32 lg:w-44 lg:h-34 xl:w-48 xl:h-36 rounded-[22px] sm:rounded-[26px] overflow-hidden p-1 relative transition-all duration-300 ring-4 ${theme.ring} shadow-[0_0_30px_${theme.glow}] bg-slate-950`}
+            className={`w-32 h-24 sm:w-36 sm:h-26 md:w-38 md:h-28 lg:w-42 lg:h-30 xl:w-44 xl:h-32 rounded-[20px] sm:rounded-[24px] overflow-hidden p-1 relative transition-all duration-300 ring-4 ${theme.ring} shadow-[0_0_25px_${theme.glow}] bg-slate-950`}
             style={{
               background: theme.gradient
             }}
@@ -173,7 +164,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
             <img
               src={team.photo_url || '/placeholder-team.png'}
               alt={team.team_name}
-              className="w-full h-full object-cover object-center rounded-[18px] sm:rounded-[22px] bg-slate-900 border-2 border-white/90"
+              className="w-full h-full object-cover object-center rounded-[16px] sm:rounded-[20px] bg-slate-900 border-2 border-white/90"
               loading="eager"
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -184,7 +175,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
 
           {/* 2. GRAND STADIUM DIGITAL LED SCORE DISPLAY (Visible from 30+ meters) */}
           <div
-            className="relative -mt-4 px-3 sm:px-4 py-1 sm:py-1.5 rounded-2xl bg-slate-950/95 border-2 shadow-[0_8px_30px_rgba(0,0,0,0.95)] flex flex-col items-center justify-center min-w-[130px] sm:min-w-[150px] md:min-w-[170px] z-30 pointer-events-auto"
+            className="relative -mt-3.5 px-3 sm:px-4 py-1 rounded-2xl bg-slate-950/95 border-2 shadow-[0_8px_30px_rgba(0,0,0,0.95)] flex flex-col items-center justify-center min-w-[125px] sm:min-w-[140px] md:min-w-[155px] z-30 pointer-events-auto"
             style={{
               borderColor: isLeader && team.score > 0 ? '#F59E0B' : theme.primary,
               boxShadow: `0 0 25px ${isLeader && team.score > 0 ? 'rgba(245,158,11,0.7)' : theme.glow}, inset 0 0 12px rgba(0,0,0,0.9)`
@@ -193,11 +184,11 @@ export const NeonBar: React.FC<NeonBarProps> = ({
             <span className="text-[9px] sm:text-[10px] font-mono font-black uppercase tracking-widest text-slate-300 leading-none">
               TOTAL SKOR
             </span>
-            <span className="text-3xl sm:text-4xl md:text-[46px] lg:text-[54px] font-black font-mono tracking-tight tabular-nums text-white drop-shadow-[0_2px_14px_rgba(0,0,0,1)] leading-none my-0.5">
+            <span className="text-3xl sm:text-4xl md:text-[42px] lg:text-[48px] font-black font-mono tracking-tight tabular-nums text-white drop-shadow-[0_2px_14px_rgba(0,0,0,1)] leading-none my-0.5">
               {displayedScore}
             </span>
           </div>
-        </motion.div>
+        </div>
 
         {/* 2. GLOSSY 3D NEON PEDESTAL / BAR */}
         <motion.div
@@ -206,13 +197,13 @@ export const NeonBar: React.FC<NeonBarProps> = ({
           }}
           transition={{
             type: 'spring',
-            stiffness: 120,
+            stiffness: 110,
             damping: 18
           }}
           className="w-full relative rounded-2xl overflow-hidden shadow-2xl border-t-2 border-x border-white/70"
           style={{
             height: `${totalBarHeight}px`,
-            minHeight: '52px',
+            minHeight: '64px',
             background: theme.gradient,
             boxShadow: `0 0 30px ${theme.glow}, inset 0 0 20px rgba(255,255,255,0.4)`
           }}
@@ -244,15 +235,15 @@ export const NeonBar: React.FC<NeonBarProps> = ({
       ======================================================== */}
       <div className="w-full z-20 px-0.5 pt-1.5">
         <div
-          className={`rounded-2xl py-3 px-2 sm:px-3 text-center shadow-2xl border-2 transition-all duration-300 bg-slate-950/95 backdrop-blur-md ${theme.cardBorder}`}
+          className={`rounded-2xl py-2.5 px-2 sm:px-3 text-center shadow-2xl border-2 transition-all duration-300 bg-slate-950/95 backdrop-blur-md ${theme.cardBorder}`}
           style={{
             boxShadow: `0 12px 35px rgba(0,0,0,0.85), 0 0 15px ${theme.glow}`
           }}
         >
           {/* Regu Badge & Rank */}
-          <div className="flex items-center justify-center space-x-1.5 mb-1.5">
+          <div className="flex items-center justify-center space-x-1.5 mb-1">
             <span
-              className="text-[11px] sm:text-xs font-black uppercase tracking-wider px-3 py-0.5 rounded-full text-white shadow-md"
+              className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full text-white shadow-md"
               style={{ background: theme.gradient }}
             >
               {team.regu}
@@ -263,23 +254,23 @@ export const NeonBar: React.FC<NeonBarProps> = ({
           </div>
 
           {/* Team Name (Extra Bold & High Visibility) */}
-          <div className="text-sm sm:text-base md:text-[18px] lg:text-[20px] font-black text-white leading-tight text-center max-w-full drop-shadow-[0_2px_5px_rgba(0,0,0,0.95)] px-0.5 min-h-[2.85rem] flex items-center justify-center">
+          <div className="text-sm sm:text-base md:text-[17px] lg:text-[18px] font-black text-white leading-tight text-center max-w-full drop-shadow-[0_2px_5px_rgba(0,0,0,0.95)] px-0.5 min-h-[2.6rem] flex items-center justify-center">
             {team.team_name}
           </div>
 
           {/* Institution / School (High-Contrast Luminous Badge) */}
-          <div className="mt-1 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/20 min-h-[2.1rem] flex items-center justify-center shadow-inner">
-            <span className="text-xs sm:text-[13px] md:text-sm lg:text-[14px] font-extrabold text-amber-300 text-center leading-tight tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+          <div className="mt-1 px-2 py-0.5 rounded-xl bg-slate-900/90 border border-white/20 min-h-[1.9rem] flex items-center justify-center shadow-inner">
+            <span className="text-xs sm:text-[12px] md:text-sm font-extrabold text-amber-300 text-center leading-tight tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
               {team.institution}
             </span>
           </div>
 
           {/* Secondary Live Score Strip in Base Card */}
-          <div className="mt-2 pt-1.5 border-t border-white/10 flex items-center justify-between px-2.5 bg-white/[0.04] rounded-lg">
-            <span className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+          <div className="mt-1.5 pt-1 border-t border-white/10 flex items-center justify-between px-2 bg-white/[0.04] rounded-lg">
+            <span className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">
               SKOR MEJA
             </span>
-            <span className="text-sm sm:text-base md:text-lg font-black font-mono text-cyan-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]">
+            <span className="text-sm sm:text-base font-black font-mono text-cyan-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.7)]">
               {displayedScore} <span className="text-[10px] text-slate-400 font-medium">PTS</span>
             </span>
           </div>

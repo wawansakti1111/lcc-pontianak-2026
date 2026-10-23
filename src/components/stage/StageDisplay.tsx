@@ -177,7 +177,7 @@ export const StageDisplay: React.FC = () => {
       {/* ========================================================
           ZONA TENGAH: MAIN 5 PODIUMS / RECAP TABLE / HISTORY LOG (~72%)
       ======================================================== */}
-      <main className="relative flex-1 w-full max-w-full overflow-hidden mx-auto px-2 sm:px-4 md:px-6 z-10 flex flex-col md:flex-row items-center md:items-end justify-start md:justify-center pb-4 sm:pb-8 md:pb-12">
+      <main className="relative flex-1 w-full max-w-full overflow-hidden mx-auto px-2 sm:px-4 md:px-6 z-10 flex flex-col md:flex-row items-center md:items-end justify-start md:justify-center pb-3 sm:pb-5 md:pb-6">
         {presentationMode === 'history' ? (
           /* TV Broadcast Score History & Audit Log Mode */
           <StageHistoryLog
@@ -271,7 +271,7 @@ export const StageDisplay: React.FC = () => {
             </div>
 
             {/* 2. DESKTOP / TABLET WIDESCREEN ARENA (>= md) */}
-            <div className="hidden md:flex w-full h-full items-end justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-5 max-w-[1540px] pb-3 sm:pb-5 md:pb-7">
+            <div className="hidden md:flex w-full h-full items-end justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-5 max-w-[1540px] pb-1 sm:pb-2 md:pb-2">
               {sortTeams(activeCategoryTeams).map((team) => (
                 <NeonBar
                   key={team.id}
