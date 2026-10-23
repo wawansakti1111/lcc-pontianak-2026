@@ -163,7 +163,7 @@ export function useScoreboardData() {
       if (!supabase) return;
       try {
         const [teamsRes, configRes, histRes] = await Promise.all([
-          supabase.from('teams').select('*'),
+          supabase.from('teams').select('*').order('id'),
           supabase.from('stage_config').select('*').eq('id', 1).single(),
           supabase.from('score_history').select('*').order('timestamp', { ascending: false }).limit(50)
         ]);
