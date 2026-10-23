@@ -11,7 +11,7 @@ const STORAGE_KEYS = {
   HISTORY: 'lcc_2026_history'
 };
 
-const CURRENT_DATA_VERSION = 'lcc_2026_clean_v3_zero_scores';
+const CURRENT_DATA_VERSION = 'lcc_2026_grand_final_top5_v1';
 
 // Cross-tab broadcast channel for instant local testing without Supabase
 const localChannel = typeof window !== 'undefined' ? new BroadcastChannel('lcc_local_sync') : null;
@@ -84,23 +84,29 @@ ON CONFLICT (id) DO UPDATE SET
   current_round_title = EXCLUDED.current_round_title,
   presentation_mode = EXCLUDED.presentation_mode;
 
--- Tim Mahasiswa Umum (Default Skor: 0)
+-- Tim Mahasiswa Umum (5 Besar Finalis Resmi - Skor Default: 0)
 INSERT INTO teams (id, category, regu, team_name, institution, photo_url, score) VALUES
-('mhs_a', 'mahasiswa_umum', 'Regu A', 'Tim Khatulistiwa', 'Universitas Tanjungpura', '/teams/mhs_a.jpg', 0),
-('mhs_b', 'mahasiswa_umum', 'Regu B', 'Tim Kapuas Jaya', 'Politeknik Negeri Pontianak', '/teams/mhs_b.jpg', 0),
-('mhs_c', 'mahasiswa_umum', 'Regu C', 'Tim Equator Muda', 'IAIN Pontianak', '/teams/mhs_c.jpg', 0),
-('mhs_d', 'mahasiswa_umum', 'Regu D', 'Tim Bintang Borneo', 'Universitas Panca Bhakti', '/teams/mhs_d.jpg', 0),
-('mhs_e', 'mahasiswa_umum', 'Regu E', 'Tim Tugu Digdaya', 'Universitas Muhammadiyah Pontianak', '/teams/mhs_e.jpg', 0)
-ON CONFLICT (id) DO UPDATE SET score = 0;
+('mhs_a', 'mahasiswa_umum', 'Regu A', 'ENGLISH CLUB', 'Universitas Tanjungpura', '/teams/mhs_a.jpg', 0),
+('mhs_b', 'mahasiswa_umum', 'Regu B', 'AMERTA PUSTAKA', 'Universitas Tanjungpura', '/teams/mhs_b.jpg', 0),
+('mhs_c', 'mahasiswa_umum', 'Regu C', 'FORUM GENRE PTK', 'Forum GenRe Pontianak', '/teams/mhs_c.jpg', 0),
+('mhs_d', 'mahasiswa_umum', 'Regu D', 'LEX FORTIS', 'Fakultas Hukum Untan', '/teams/mhs_d.jpg', 0),
+('mhs_e', 'mahasiswa_umum', 'Regu E', 'THE ORIGINS', 'Mahasiswa / Komunitas', '/teams/mhs_e.jpg', 0)
+ON CONFLICT (id) DO UPDATE SET 
+  team_name = EXCLUDED.team_name,
+  institution = EXCLUDED.institution,
+  score = 0;
 
--- Tim Siswa SMA (Default Skor: 0)
+-- Tim Siswa SMA (5 Besar Finalis Resmi - Skor Default: 0)
 INSERT INTO teams (id, category, regu, team_name, institution, photo_url, score) VALUES
-('sma_a', 'siswa_sma', 'Regu A', 'Tim Garuda Belia', 'SMAN 1 Pontianak', '/teams/sma_a.jpg', 0),
-('sma_b', 'siswa_sma', 'Regu B', 'Tim Dwikora Juara', 'SMAN 3 Pontianak', '/teams/sma_b.jpg', 0),
-('sma_c', 'siswa_sma', 'Regu C', 'Tim Lancang Kuning', 'SMKN 2 Pontianak', '/teams/sma_c.jpg', 0),
-('sma_d', 'siswa_sma', 'Regu D', 'Tim Panglima Taruna', 'SMA Santo Paulus Pontianak', '/teams/sma_d.jpg', 0),
-('sma_e', 'siswa_sma', 'Regu E', 'Tim Rencong Khatulistiwa', 'MAN 2 Pontianak', '/teams/sma_e.jpg', 0)
-ON CONFLICT (id) DO UPDATE SET score = 0;
+('sma_a', 'siswa_sma', 'Regu A', 'SMA SANTO PAULUS', 'SMA Santo Paulus Pontianak', '/teams/sma_a.jpg', 0),
+('sma_b', 'siswa_sma', 'Regu B', 'SMAN 3 (TIM B)', 'SMA Negeri 3 Pontianak', '/teams/sma_b.jpg', 0),
+('sma_c', 'siswa_sma', 'Regu C', 'SMAS BINA MULIA', 'SMAS Bina Mulia Pontianak', '/teams/sma_c.jpg', 0),
+('sma_d', 'siswa_sma', 'Regu D', 'SMAN 3 (TIM A)', 'SMA Negeri 3 Pontianak', '/teams/sma_d.jpg', 0),
+('sma_e', 'siswa_sma', 'Regu E', 'SMAN 1 PONTIANAK', 'SMA Negeri 1 Pontianak', '/teams/sma_e.jpg', 0)
+ON CONFLICT (id) DO UPDATE SET 
+  team_name = EXCLUDED.team_name,
+  institution = EXCLUDED.institution,
+  score = 0;
 `;
 
 let cachedClient: SupabaseClient | null = null;

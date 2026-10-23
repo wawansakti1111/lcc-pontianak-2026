@@ -75,12 +75,12 @@ export const INITIAL_STAGE_CONFIG: StageConfig = {
 export const INITIAL_HISTORY: ScoreHistoryItem[] = [];
 
 export const INITIAL_TEAMS: Team[] = [
-  // Kategori 1: Mahasiswa Umum (5 Tim)
+  // Kategori 1: Mahasiswa Umum (5 Tim Finalis Resmi - Hasil Audisi/Penyisihan)
   {
     id: 'mhs_a',
     category: 'mahasiswa_umum',
     regu: 'Regu A',
-    team_name: 'Tim Khatulistiwa',
+    team_name: 'ENGLISH CLUB',
     institution: 'Universitas Tanjungpura',
     photo_url: '/teams/mhs_a.jpg',
     score: 0
@@ -89,8 +89,8 @@ export const INITIAL_TEAMS: Team[] = [
     id: 'mhs_b',
     category: 'mahasiswa_umum',
     regu: 'Regu B',
-    team_name: 'Tim Kapuas Jaya',
-    institution: 'Politeknik Negeri Pontianak',
+    team_name: 'AMERTA PUSTAKA',
+    institution: 'Universitas Tanjungpura',
     photo_url: '/teams/mhs_b.jpg',
     score: 0
   },
@@ -98,8 +98,8 @@ export const INITIAL_TEAMS: Team[] = [
     id: 'mhs_c',
     category: 'mahasiswa_umum',
     regu: 'Regu C',
-    team_name: 'Tim Equator Muda',
-    institution: 'IAIN Pontianak',
+    team_name: 'FORUM GENRE PTK',
+    institution: 'Forum GenRe Pontianak',
     photo_url: '/teams/mhs_c.jpg',
     score: 0
   },
@@ -107,8 +107,8 @@ export const INITIAL_TEAMS: Team[] = [
     id: 'mhs_d',
     category: 'mahasiswa_umum',
     regu: 'Regu D',
-    team_name: 'Tim Bintang Borneo',
-    institution: 'Universitas Panca Bhakti',
+    team_name: 'LEX FORTIS',
+    institution: 'Fakultas Hukum Untan',
     photo_url: '/teams/mhs_d.jpg',
     score: 0
   },
@@ -116,19 +116,19 @@ export const INITIAL_TEAMS: Team[] = [
     id: 'mhs_e',
     category: 'mahasiswa_umum',
     regu: 'Regu E',
-    team_name: 'Tim Tugu Digdaya',
-    institution: 'Universitas Muhammadiyah Pontianak',
+    team_name: 'THE ORIGINS',
+    institution: 'Mahasiswa / Komunitas',
     photo_url: '/teams/mhs_e.jpg',
     score: 0
   },
 
-  // Kategori 2: Siswa SMA (5 Tim)
+  // Kategori 2: Siswa SMA (5 Tim Finalis Resmi - Hasil Audisi/Penyisihan)
   {
     id: 'sma_a',
     category: 'siswa_sma',
     regu: 'Regu A',
-    team_name: 'Tim Garuda Belia',
-    institution: 'SMAN 1 Pontianak',
+    team_name: 'SMA SANTO PAULUS',
+    institution: 'SMA Santo Paulus Pontianak',
     photo_url: '/teams/sma_a.jpg',
     score: 0
   },
@@ -136,8 +136,8 @@ export const INITIAL_TEAMS: Team[] = [
     id: 'sma_b',
     category: 'siswa_sma',
     regu: 'Regu B',
-    team_name: 'Tim Dwikora Juara',
-    institution: 'SMAN 3 Pontianak',
+    team_name: 'SMAN 3 (TIM B)',
+    institution: 'SMA Negeri 3 Pontianak',
     photo_url: '/teams/sma_b.jpg',
     score: 0
   },
@@ -145,8 +145,8 @@ export const INITIAL_TEAMS: Team[] = [
     id: 'sma_c',
     category: 'siswa_sma',
     regu: 'Regu C',
-    team_name: 'Tim Lancang Kuning',
-    institution: 'SMKN 2 Pontianak',
+    team_name: 'SMAS BINA MULIA',
+    institution: 'SMAS Bina Mulia Pontianak',
     photo_url: '/teams/sma_c.jpg',
     score: 0
   },
@@ -154,8 +154,8 @@ export const INITIAL_TEAMS: Team[] = [
     id: 'sma_d',
     category: 'siswa_sma',
     regu: 'Regu D',
-    team_name: 'Tim Panglima Taruna',
-    institution: 'SMA Santo Paulus Pontianak',
+    team_name: 'SMAN 3 (TIM A)',
+    institution: 'SMA Negeri 3 Pontianak',
     photo_url: '/teams/sma_d.jpg',
     score: 0
   },
@@ -163,8 +163,8 @@ export const INITIAL_TEAMS: Team[] = [
     id: 'sma_e',
     category: 'siswa_sma',
     regu: 'Regu E',
-    team_name: 'Tim Rencong Khatulistiwa',
-    institution: 'MAN 2 Pontianak',
+    team_name: 'SMAN 1 PONTIANAK',
+    institution: 'SMA Negeri 1 Pontianak',
     photo_url: '/teams/sma_e.jpg',
     score: 0
   }
