@@ -71,14 +71,29 @@ export const NeonBar: React.FC<NeonBarProps> = ({
 }) => {
   const theme = PODIUM_THEMES[team.regu] || PODIUM_THEMES['Regu A'];
 
+  // Screen width detection for responsive maximum height calibration
+  const [isDesktop, setIsDesktop] = useState(
+    typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Calculate dynamic elevating height:
-  // - At score 0: dynamicRaise = 0px (base block height = 64px, handsome solid base, never looks sunken)
-  // - At max score: elevates smoothly up to 110px
-  // - Total height is clamped so photo + score never touches header text
+  // - As tall as possible to maximize tournament drama and podium hierarchy
+  // - Base block is proud and tall: 105px on desktop (never looks sunken)
+  // - Max score elevates up to 185px (total 290px tall on desktop)
+  // - Guarantees safe clearance below the header text with zero touching
   const safeMax = Math.max(maxCategoryScore, 500);
   const scoreRatio = Math.max(0, Math.min(team.score / safeMax, 1));
-  const dynamicRaise = Math.round(scoreRatio * 110);
-  const baseBlockHeight = 64; // Height of 3D block at score 0
+  const baseBlockHeight = isDesktop ? 105 : 68;
+  const maxRaise = isDesktop ? 185 : 100;
+  const dynamicRaise = Math.round(scoreRatio * maxRaise);
   const totalBarHeight = baseBlockHeight + dynamicRaise;
 
   // Animated counting for score
@@ -203,7 +218,7 @@ export const NeonBar: React.FC<NeonBarProps> = ({
           className="w-full relative rounded-2xl overflow-hidden shadow-2xl border-t-2 border-x border-white/70"
           style={{
             height: `${totalBarHeight}px`,
-            minHeight: '64px',
+            minHeight: `${baseBlockHeight}px`,
             background: theme.gradient,
             boxShadow: `0 0 30px ${theme.glow}, inset 0 0 20px rgba(255,255,255,0.4)`
           }}
