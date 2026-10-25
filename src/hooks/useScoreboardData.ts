@@ -11,7 +11,8 @@ import {
   saveLocalHistory,
   localChannel,
   setActiveRealtimeChannel,
-  broadcastScoreboardEvent
+  broadcastScoreboardEvent,
+  TAB_CLIENT_ID
 } from '../services/supabaseService';
 
 export function useScoreboardData() {
@@ -33,6 +34,9 @@ export function useScoreboardData() {
   useEffect(() => {
     stageConfigRef.current = stageConfig;
   }, [stageConfig]);
+
+  // Timestamp of the last local user interaction in this tab (to prevent background polling from overriding local edits)
+  const lastLocalActionTs = useRef<number>(0);
 
   // Last handled confetti timestamp
   const lastConfettiRef = useRef<number>(stageConfig.confetti_ts || 0);
@@ -91,8 +95,28 @@ export function useScoreboardData() {
   // Helper to handle incoming team changes with delta animations
   const applyIncomingTeams = useCallback(
     (incoming: Team[]) => {
+      if (!Array.isArray(incoming) || incoming.length === 0) return;
+
+      const current = teamsRef.current;
+      // Check if incoming is identical to current to avoid unnecessary re-renders and animation re-triggers
+      const isIdentical =
+        current.length === incoming.length &&
+        current.every((ct, idx) => {
+          const nt = incoming[idx];
+          return (
+            nt &&
+            ct.id === nt.id &&
+            ct.score === nt.score &&
+            ct.team_name === nt.team_name &&
+            ct.photo_url === nt.photo_url &&
+            ct.institution === nt.institution
+          );
+        });
+
+      if (isIdentical) return;
+
       incoming.forEach((newT) => {
-        const oldT = teamsRef.current.find((t) => t.id === newT.id);
+        const oldT = current.find((t) => t.id === newT.id);
         if (oldT && oldT.score !== newT.score) {
           triggerDelta(newT.id, newT.score - oldT.score);
         }
@@ -106,6 +130,20 @@ export function useScoreboardData() {
   // Helper to handle incoming config changes
   const applyIncomingConfig = useCallback(
     (incoming: StageConfig) => {
+      if (!incoming) return;
+
+      const cur = stageConfigRef.current;
+      const isIdentical =
+        cur.active_category_view === incoming.active_category_view &&
+        cur.presentation_mode === incoming.presentation_mode &&
+        cur.show_round_recap === incoming.show_round_recap &&
+        cur.sort_mode === incoming.sort_mode &&
+        cur.current_round_title === incoming.current_round_title &&
+        cur.confetti_ts === incoming.confetti_ts &&
+        cur.event_subtitle === incoming.event_subtitle;
+
+      if (isIdentical) return;
+
       if (incoming.confetti_ts && incoming.confetti_ts > lastConfettiRef.current) {
         lastConfettiRef.current = incoming.confetti_ts;
         fireConfetti();
@@ -120,6 +158,9 @@ export function useScoreboardData() {
   useEffect(() => {
     const handleBroadcast = (e: MessageEvent) => {
       if (!e.data) return;
+      // Ignore broadcast messages sent by this tab itself
+      if (e.data.senderId === TAB_CLIENT_ID) return;
+
       if ((e.data.type === 'TEAMS_UPDATED' || e.data.type === 'TEAMS_UPDATE') && Array.isArray(e.data.teams || e.data.data)) {
         const list = (e.data.teams || e.data.data) as Team[];
         applyIncomingTeams(list);
@@ -169,6 +210,7 @@ export function useScoreboardData() {
 
   // 2. SUPABASE REALTIME (WebSockets Broadcast + Postgres Changes) + BACKGROUND HEARTBEAT POLLING
   useEffect(() => {
+    let isCancelled = false;
     const supabase = getSupabaseClient();
     if (!supabase) {
       setConnectionStatus('local_simulation');
@@ -179,13 +221,20 @@ export function useScoreboardData() {
 
     // Silent background fetch to ensure state parity
     async function fetchFromCloud(isInitial = false) {
-      if (!supabase) return;
+      if (!supabase || isCancelled) return;
+      // Skip background heartbeat overwriting if local user action happened within last 4 seconds
+      if (!isInitial && Date.now() - lastLocalActionTs.current < 4000) {
+        return;
+      }
+
       try {
         const [teamsRes, configRes, histRes] = await Promise.all([
           supabase.from('teams').select('*').order('id'),
           supabase.from('stage_config').select('*').eq('id', 1).single(),
           supabase.from('score_history').select('*').order('timestamp', { ascending: false }).limit(50)
         ]);
+
+        if (isCancelled) return;
 
         if (teamsRes.error) {
           console.warn('Supabase fetch error:', teamsRes.error);
@@ -194,7 +243,6 @@ export function useScoreboardData() {
 
         if (teamsRes.data && teamsRes.data.length > 0) {
           const cloudTeams = teamsRes.data as Team[];
-          // Compare with ref
           let hasTeamDiff = isInitial;
           if (!hasTeamDiff) {
             hasTeamDiff = cloudTeams.some((ct) => {
@@ -259,8 +307,11 @@ export function useScoreboardData() {
 
     // A. Ultra-low latency (< 50ms) direct WebSocket broadcast across devices
     channel.on('broadcast', { event: 'LCC_SYNC' }, (payload: any) => {
+      if (isCancelled) return;
       const data = payload?.payload;
       if (!data) return;
+      // Ignore broadcast messages sent by this tab itself
+      if (data.senderId === TAB_CLIENT_ID) return;
 
       if ((data.type === 'TEAMS_UPDATE' || data.type === 'TEAMS_UPDATED') && Array.isArray(data.data)) {
         applyIncomingTeams(data.data as Team[]);
@@ -276,6 +327,7 @@ export function useScoreboardData() {
     // B. Postgres Changes subscription
     channel
       .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, (payload) => {
+        if (isCancelled) return;
         if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
           const updatedTeam = payload.new as Team;
           setTeams((prev) => {
@@ -290,11 +342,13 @@ export function useScoreboardData() {
         }
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'stage_config' }, (payload) => {
+        if (isCancelled) return;
         if (payload.new) {
           applyIncomingConfig(payload.new as StageConfig);
         }
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'score_history' }, (payload) => {
+        if (isCancelled) return;
         if (payload.eventType === 'INSERT' && payload.new) {
           const row = payload.new as any;
           const item: ScoreHistoryItem = {
@@ -329,6 +383,7 @@ export function useScoreboardData() {
         }
       })
       .subscribe((status) => {
+        if (isCancelled) return;
         if (status === 'SUBSCRIBED') {
           setConnectionStatus('connected');
           setActiveRealtimeChannel(channel);
@@ -344,6 +399,7 @@ export function useScoreboardData() {
     }, 2500);
 
     return () => {
+      isCancelled = true;
       clearInterval(pollInterval);
       setActiveRealtimeChannel(null);
       supabase.removeChannel(channel);
@@ -353,6 +409,7 @@ export function useScoreboardData() {
   // Actions
   const updateScore = useCallback(
     async (teamId: string, delta: number) => {
+      lastLocalActionTs.current = Date.now();
       const targetTeam = teamsRef.current.find((t) => t.id === teamId);
       if (!targetTeam) return;
 
@@ -418,6 +475,7 @@ export function useScoreboardData() {
 
   const setCustomScore = useCallback(
     async (teamId: string, score: number) => {
+      lastLocalActionTs.current = Date.now();
       const targetTeam = teamsRef.current.find((t) => t.id === teamId);
       if (!targetTeam) return;
 
@@ -478,6 +536,7 @@ export function useScoreboardData() {
   );
 
   const undoLastAction = useCallback(async () => {
+    lastLocalActionTs.current = Date.now();
     if (history.length === 0) return;
     const [lastItem, ...restHistory] = history;
 
@@ -511,6 +570,7 @@ export function useScoreboardData() {
 
   const updateTeamIdentity = useCallback(
     async (teamId: string, updates: Partial<Team>) => {
+      lastLocalActionTs.current = Date.now();
       const nextTeams = teamsRef.current.map((t) =>
         t.id === teamId ? { ...t, ...updates } : t
       );
@@ -533,6 +593,7 @@ export function useScoreboardData() {
 
   const updateStageConfig = useCallback(
     async (updates: Partial<StageConfig>) => {
+      lastLocalActionTs.current = Date.now();
       const nextConfig = { ...stageConfigRef.current, ...updates };
       setStageConfig(nextConfig);
       saveLocalStageConfig(nextConfig);
@@ -553,6 +614,7 @@ export function useScoreboardData() {
   );
 
   const triggerConfettiRemote = useCallback(async () => {
+    lastLocalActionTs.current = Date.now();
     const timestamp = Date.now();
     fireConfetti();
     lastConfettiRef.current = timestamp;
@@ -574,6 +636,7 @@ export function useScoreboardData() {
   }, [fireConfetti]);
 
   const resetAllScores = useCallback(async () => {
+    lastLocalActionTs.current = Date.now();
     const nextTeams = teamsRef.current.map((t) => ({ ...t, score: 0 }));
     setTeams(nextTeams);
     saveLocalTeams(nextTeams);

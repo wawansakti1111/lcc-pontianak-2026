@@ -119,14 +119,27 @@ const DEFAULT_SUPABASE_KEY = 'sb_publishable_ICZ4LrEFyENXIVaxpGlfBw_6Kl7h3At';
 
 let activeRealtimeChannel: any = null;
 
+// Unique identifier for this browser tab instance to prevent self-echo loops
+export const TAB_CLIENT_ID =
+  typeof window !== 'undefined'
+    ? Math.random().toString(36).substring(2, 9) + '-' + Date.now().toString(36)
+    : 'server';
+
 export function setActiveRealtimeChannel(channel: any) {
   activeRealtimeChannel = channel;
 }
 
 export function broadcastScoreboardEvent(type: string, data: any) {
+  const payload = {
+    type,
+    data,
+    senderId: TAB_CLIENT_ID,
+    ts: Date.now()
+  };
+
   // 1. Post to local BroadcastChannel (instant 0ms cross-tab sync on same computer)
   try {
-    localChannel?.postMessage({ type, data });
+    localChannel?.postMessage(payload);
   } catch (e) {
     console.warn('Local broadcast error:', e);
   }
@@ -137,7 +150,7 @@ export function broadcastScoreboardEvent(type: string, data: any) {
       activeRealtimeChannel.send({
         type: 'broadcast',
         event: 'LCC_SYNC',
-        payload: { type, data, ts: Date.now() }
+        payload
       });
     } catch (err) {
       console.warn('Supabase realtime broadcast error:', err);
@@ -226,8 +239,14 @@ export function getLocalTeams(): Team[] {
 }
 
 export function saveLocalTeams(teams: Team[]) {
-  localStorage.setItem(STORAGE_KEYS.TEAMS, JSON.stringify(teams));
-  localChannel?.postMessage({ type: 'TEAMS_UPDATED', teams });
+  try {
+    const serialized = JSON.stringify(teams);
+    if (localStorage.getItem(STORAGE_KEYS.TEAMS) !== serialized) {
+      localStorage.setItem(STORAGE_KEYS.TEAMS, serialized);
+    }
+  } catch (e) {
+    console.warn('saveLocalTeams storage error:', e);
+  }
 }
 
 export function getLocalStageConfig(): StageConfig {
@@ -248,8 +267,14 @@ export function getLocalStageConfig(): StageConfig {
 }
 
 export function saveLocalStageConfig(config: StageConfig) {
-  localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(config));
-  localChannel?.postMessage({ type: 'CONFIG_UPDATED', config });
+  try {
+    const serialized = JSON.stringify(config);
+    if (localStorage.getItem(STORAGE_KEYS.CONFIG) !== serialized) {
+      localStorage.setItem(STORAGE_KEYS.CONFIG, serialized);
+    }
+  } catch (e) {
+    console.warn('saveLocalStageConfig storage error:', e);
+  }
 }
 
 export function getLocalHistory(): ScoreHistoryItem[] {
@@ -265,7 +290,14 @@ export function getLocalHistory(): ScoreHistoryItem[] {
 }
 
 export function saveLocalHistory(history: ScoreHistoryItem[]) {
-  localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history.slice(0, 50)));
+  try {
+    const serialized = JSON.stringify(history.slice(0, 50));
+    if (localStorage.getItem(STORAGE_KEYS.HISTORY) !== serialized) {
+      localStorage.setItem(STORAGE_KEYS.HISTORY, serialized);
+    }
+  } catch (e) {
+    console.warn('saveLocalHistory storage error:', e);
+  }
 }
 
 export { localChannel };

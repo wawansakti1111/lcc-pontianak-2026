@@ -53,24 +53,28 @@ export const StageDisplay: React.FC = () => {
 
   // Helper to sort teams according to current sort_mode
   const sortTeams = (teamList: Team[]): Team[] => {
+    if (!Array.isArray(teamList)) return [];
     if (stageConfig.sort_mode === 'ranking') {
-      return [...teamList].sort((a, b) => b.score - a.score);
+      return [...teamList].sort((a, b) => (b.score || 0) - (a.score || 0));
     }
     // Default: desk_order (Regu A -> Regu E)
-    return [...teamList].sort((a, b) => a.regu.localeCompare(b.regu));
+    return [...teamList].sort((a, b) => (a.regu || '').localeCompare(b.regu || ''));
   };
 
   // Filter teams according to category view
-  const mhsTeams = teams.filter((t) => t.category === 'mahasiswa_umum');
-  const smaTeams = teams.filter((t) => t.category === 'siswa_sma');
+  const mhsTeams = Array.isArray(teams) ? teams.filter((t) => t.category === 'mahasiswa_umum') : [];
+  const smaTeams = Array.isArray(teams) ? teams.filter((t) => t.category === 'siswa_sma') : [];
 
   const getRankMap = (list: Team[]) => {
+    if (!Array.isArray(list) || list.length === 0) return new Map<string, number>();
     // Sort by score descending; if score tied, fallback to Regu desk order (A -> E)
     const sorted = [...list].sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
+      const scoreA = a.score || 0;
+      const scoreB = b.score || 0;
+      if (scoreB !== scoreA) {
+        return scoreB - scoreA;
       }
-      return a.regu.localeCompare(b.regu);
+      return (a.regu || '').localeCompare(b.regu || '');
     });
     const map = new Map<string, number>();
     sorted.forEach((t, idx) => map.set(t.id, idx + 1));
@@ -80,16 +84,16 @@ export const StageDisplay: React.FC = () => {
   const mhsRankMap = getRankMap(mhsTeams);
   const smaRankMap = getRankMap(smaTeams);
 
-  const mhsMaxScore = Math.max(...mhsTeams.map((t) => t.score), 0);
-  const smaMaxScore = Math.max(...smaTeams.map((t) => t.score), 0);
+  const mhsMaxScore = mhsTeams.length > 0 ? Math.max(...mhsTeams.map((t) => t.score || 0), 0) : 0;
+  const smaMaxScore = smaTeams.length > 0 ? Math.max(...smaTeams.map((t) => t.score || 0), 0) : 0;
 
   const mhsLeaderId = mhsTeams.reduce(
-    (max, t) => (t.score > max.score ? t : max),
+    (max, t) => ((t.score || 0) > (max.score || 0) ? t : max),
     mhsTeams[0] || { id: '', score: -Infinity }
   )?.id;
 
   const smaLeaderId = smaTeams.reduce(
-    (max, t) => (t.score > max.score ? t : max),
+    (max, t) => ((t.score || 0) > (max.score || 0) ? t : max),
     smaTeams[0] || { id: '', score: -Infinity }
   )?.id;
 
@@ -196,7 +200,7 @@ export const StageDisplay: React.FC = () => {
           />
         ) : effectiveCategoryView === 'dual' ? (
           /* Dual Arena Split Mode (Mahasiswa & SMA side by side) */
-          <div className="w-full h-full flex flex-col md:flex-row items-end gap-6 md:gap-10">
+          <div className="w-full h-full flex flex-col md:flex-row items-end gap-3 md:gap-6 max-w-[1600px] overflow-hidden">
             {/* Arena Mahasiswa */}
             <div className="flex-1 w-full h-full flex flex-col justify-end bg-slate-950/40 rounded-2xl p-2 border border-white/20 backdrop-blur-sm relative">
               <div className="absolute top-2 left-4 text-xs font-black uppercase tracking-wider text-cyan-300 flex items-center space-x-1">
